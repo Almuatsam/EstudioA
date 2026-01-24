@@ -1,9 +1,14 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from flask_bcrypt import Bcrypt
 from config import config
 from models import db
 import os
+
+# Initialize extensions
+jwt = JWTManager()
+bcrypt = Bcrypt()
 
 def create_app(config_name='development'):
     """Application factory function"""
@@ -16,13 +21,14 @@ def create_app(config_name='development'):
     
     # Initialize extensions
     CORS(app)
-    jwt = JWTManager(app)
+    jwt.init_app(app)
+    bcrypt.init_app(app)
     
     # Initialize database
     db.init_app(app)
     
     # Create upload folder if it doesn't exist
-    upload_folder = app.config['UPLOAD_FOLDER']
+    upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads')
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
     
@@ -36,11 +42,11 @@ def create_app(config_name='development'):
         db.create_all()
         print("Database tables created successfully!")
     
-    # Register blueprints (routes) - will add later
-    # from routes import auth_bp, patterns_bp, admin_bp
-    # app.register_blueprint(auth_bp)
-    # app.register_blueprint(patterns_bp)
-    # app.register_blueprint(admin_bp)
+    # Register blueprints (routes)
+    from routes.auth import auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    # from routes.auth import auth_bp
+    # app.register_blueprint(auth_bp, url_prefix='/api/auth')
     
     # Health check route
     @app.route('/')

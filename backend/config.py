@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from urllib.parse import quote_plus
 
 class Config:
     """Base configuration class"""
@@ -10,7 +11,9 @@ class Config:
     TESTING = False
     
     # Database settings
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'mysql+pymysql://root:A1103%402003a@localhost/estudioa'
+    # Properly encode the password to handle special characters
+    db_password = quote_plus('A1103@2003a')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f'mysql+pymysql://root:{db_password}@localhost/estudioa'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
     
@@ -27,24 +30,20 @@ class Config:
     # CORS settings
     CORS_HEADERS = 'Content-Type'
 
-
 class DevelopmentConfig(Config):
     """Development configuration"""
     DEBUG = True
     SQLALCHEMY_ECHO = True  # Print SQL queries to console
-
 
 class ProductionConfig(Config):
     """Production configuration"""
     DEBUG = False
     SQLALCHEMY_ECHO = False
 
-
 class TestingConfig(Config):
     """Testing configuration"""
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
-
 
 # Dictionary to select config by name
 config = {
