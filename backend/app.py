@@ -44,7 +44,10 @@ def create_app(config_name='development'):
     
     # Register blueprints (routes)
     from routes.auth import auth_bp
+    from routes.patterns import patterns_bp
+    
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    app.register_blueprint(patterns_bp, url_prefix='/api/patterns')
     # from routes.auth import auth_bp
     # app.register_blueprint(auth_bp, url_prefix='/api/auth')
     

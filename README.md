@@ -13,8 +13,8 @@ EstudioA is a modern web-based platform for sewing patterns that leverages artif
 - **Student ID:** 23F24768
 - **Institution:** Middle East College
 - **Supervisor:** Dhanalakshmi Venugopal
-- **Course:** Web Application in Computer Science
-- **Date:** January 2026
+- **Course:** Bachelor Graduation Project in Computer Science
+- **Year:** Fall 2025 \ Spring 2026
 
 ## 🎯 Key Features
 
