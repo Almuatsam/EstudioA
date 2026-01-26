@@ -43,16 +43,15 @@ def create_app(config_name='development'):
         print("Database tables created successfully!")
     
     # Register blueprints (routes)
-   # Register blueprints (routes)
     from routes.auth import auth_bp
     from routes.patterns import patterns_bp
     from routes.admin import admin_bp
+    from routes.upload import upload_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(patterns_bp, url_prefix='/api/patterns')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
-    # from routes.auth import auth_bp
-    # app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    app.register_blueprint(upload_bp, url_prefix='/api/upload')
     
     # Health check route
     @app.route('/')
