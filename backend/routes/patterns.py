@@ -6,6 +6,8 @@ from models import db
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
+from services.search_service import search_patterns
+
 
 patterns_bp = Blueprint('patterns', __name__)
 
@@ -226,8 +228,6 @@ def get_categories():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-
 @patterns_bp.route('/difficulties', methods=['GET'])
 def get_difficulties():
     """Get all difficulty levels"""
@@ -245,6 +245,66 @@ def get_difficulties():
         
         return jsonify({
             'difficulties': difficulties_list
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@patterns_bp.route('/search', methods=['GET'])
+def search():
+    """Search patterns using AI (fuzzy + semantic matching)"""
+    try:
+        # Get search query from URL parameters
+        search_query = request.args.get('q', '').strip()
+        
+        # Validate search query
+        if not search_query:
+            return jsonify({'error': 'Search query is required'}), 400
+        
+        if len(search_query) < 2:
+            return jsonify({'error': 'Search query must be at least 2 characters'}), 400
+        
+        # Get optional parameters
+        use_fuzzy = request.args.get('fuzzy', 'true').lower() == 'true'
+        use_semantic = request.args.get('semantic', 'true').lower() == 'true'
+        limit = request.args.get('limit', 20, type=int)
+        
+        # Perform search
+        results = search_patterns(
+            search_term=search_query,
+            use_fuzzy=use_fuzzy,
+            use_semantic=use_semantic,
+            limit=limit
+        )
+        
+        # Format results for response
+        patterns_list = []
+        for result in results:
+            pattern = result['pattern']
+            patterns_list.append({
+                'id': pattern.id,
+                'title': pattern.title,
+                'description': pattern.description,
+                'category': {
+                    'id': pattern.category.id,
+                    'name': pattern.category.name
+                } if pattern.category else None,
+                'difficulty': {
+                    'id': pattern.difficulty.id,
+                    'name': pattern.difficulty.name
+                } if pattern.difficulty else None,
+                'tags': pattern.get_tags_list(),
+                'preview_image': pattern.preview_image,
+                'designer_name': pattern.designer_name,
+                'score': result['score'],
+                'match_type': result['match_type']
+            })
+        
+        return jsonify({
+            'query': search_query,
+            'total_results': len(patterns_list),
+            'patterns': patterns_list
         }), 200
         
     except Exception as e:
