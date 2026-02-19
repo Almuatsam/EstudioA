@@ -1,67 +1,56 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { patternsAPI, recommendationsAPI } from '../services/api'
 
 function PatternDetailPage() {
   const { id } = useParams()
   const [pattern, setPattern] = useState(null)
   const [recommendations, setRecommendations] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const placeholderPatterns = {
-    1: {
-      id: 1,
-      title: 'Blue Summer Dress',
-      description: 'A light and breezy dress perfect for warm weather and casual occasions. Features a flattering A-line silhouette with adjustable straps and side pockets.',
-      category: { id: 1, name: 'Dresses' },
-      difficulty: { id: 2, name: 'Easy' },
-      designer_name: 'Sarah Johnson',
-      tags: ['summer', 'casual', 'blue', 'dress'],
-      download_count: 245,
-      view_count: 1024,
-      pdf_file: 'blue-summer-dress.pdf'
-    },
-    2: {
-      id: 2,
-      title: 'Formal Evening Gown',
-      description: 'Elegant formal dress for special occasions and evening events. Floor-length with intricate beading and a fitted bodice.',
-      category: { id: 1, name: 'Dresses' },
-      difficulty: { id: 4, name: 'Advanced' },
-      designer_name: 'Emma Williams',
-      tags: ['formal', 'evening', 'gown', 'special occasion'],
-      download_count: 198,
-      view_count: 856,
-      pdf_file: 'evening-gown.pdf'
-    },
-    3: {
-      id: 3,
-      title: 'Casual T-Shirt',
-      description: 'Simple everyday t-shirt pattern for comfortable daily wear. Perfect for beginners learning basic construction techniques.',
-      category: { id: 2, name: 'Tops & Blouses' },
-      difficulty: { id: 1, name: 'Beginner' },
-      designer_name: 'Mike Chen',
-      tags: ['casual', 'shirt', 'everyday', 'basic'],
-      download_count: 312,
-      view_count: 1453,
-      pdf_file: 'tshirt.pdf'
+  useEffect(() => {
+    loadPattern()
+    loadRecommendations()
+  }, [id])
+
+  const loadPattern = async () => {
+    try {
+      setLoading(true)
+      const data = await patternsAPI.getPattern(id)
+      setPattern(data)
+    } catch (error) {
+      console.error('Failed to load pattern:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const placeholderRecommendations = [
-    { id: 2, title: 'Formal Evening Gown', difficulty: 'Advanced' },
-    { id: 3, title: 'Casual T-Shirt', difficulty: 'Beginner' },
-    { id: 4, title: 'Winter Coat', difficulty: 'Expert' },
-    { id: 5, title: 'Cotton Blouse', difficulty: 'Intermediate' },
-  ]
+  const loadRecommendations = async () => {
+    try {
+      const data = await recommendationsAPI.getPatternRecommendations(id, 4)
+      setRecommendations(data.recommendations || [])
+    } catch (error) {
+      console.error('Failed to load recommendations:', error)
+    }
+  }
 
-  useEffect(() => {
-    const foundPattern = placeholderPatterns[id] || placeholderPatterns[1]
-    setPattern(foundPattern)
-    setRecommendations(placeholderRecommendations)
-  }, [id])
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p style={{ color: '#6E8594' }}>Loading pattern...</p>
+      </div>
+    )
+  }
 
   if (!pattern) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p style={{ color: '#6E8594' }}>Loading pattern...</p>
+        <div className="text-center">
+          <p style={{ color: '#6E8594' }} className="mb-4">Pattern not found</p>
+          <Link to="/browse" style={{ color: '#5C768A' }}>
+            ← Back to Browse
+          </Link>
+        </div>
       </div>
     )
   }
@@ -87,11 +76,19 @@ function PatternDetailPage() {
             <div>
               <div 
                 style={{ backgroundColor: '#D9CDB8' }}
-                className="rounded-xl h-96 flex items-center justify-center"
+                className="rounded-xl h-96 flex items-center justify-center overflow-hidden"
               >
-                <span style={{ color: '#6E8594' }} className="text-8xl">
-                  📐
-                </span>
+                {pattern.preview_image ? (
+                  <img 
+                    src={`http://127.0.0.1:5000${pattern.preview_image}`}
+                    alt={pattern.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span style={{ color: '#6E8594' }} className="text-8xl">
+                    📐
+                  </span>
+                )}
               </div>
             </div>
 
@@ -115,7 +112,7 @@ function PatternDetailPage() {
                     style={{ color: '#1F2F3A' }}
                     className="ml-2"
                   >
-                    {pattern.category.name}
+                    {pattern.category?.name || 'Uncategorized'}
                   </span>
                 </div>
 
@@ -130,7 +127,7 @@ function PatternDetailPage() {
                     style={{ color: '#1F2F3A' }}
                     className="ml-2"
                   >
-                    {pattern.difficulty.name}
+                    {pattern.difficulty?.name || 'N/A'}
                   </span>
                 </div>
 
@@ -145,45 +142,57 @@ function PatternDetailPage() {
                     style={{ color: '#1F2F3A' }}
                     className="ml-2"
                   >
-                    {pattern.designer_name}
+                    {pattern.designer_name || 'Unknown'}
                   </span>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <span 
-                  style={{ color: '#6E8594' }}
-                  className="text-sm font-medium block mb-2"
-                >
-                  Tags:
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {pattern.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      style={{ backgroundColor: '#A9BFCA', color: '#1F2F3A' }}
-                      className="px-3 py-1 rounded-full text-sm"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+              {/* Tags */}
+              {pattern.tags && pattern.tags.length > 0 && (
+                <div className="mb-6">
+                  <span 
+                    style={{ color: '#6E8594' }}
+                    className="text-sm font-medium block mb-2"
+                  >
+                    Tags:
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {pattern.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        style={{ backgroundColor: '#A9BFCA', color: '#1F2F3A' }}
+                        className="px-3 py-1 rounded-full text-sm"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
+              {/* Stats */}
               <div className="flex gap-6 mb-6">
                 <div>
                   <span style={{ color: '#6E8594' }} className="text-sm">
-                    {pattern.download_count} Downloads
+                    {pattern.download_count || 0} Downloads
                   </span>
                 </div>
                 <div>
                   <span style={{ color: '#6E8594' }} className="text-sm">
-                    {pattern.view_count} Views
+                    {pattern.view_count || 0} Views
                   </span>
                 </div>
               </div>
 
+              {/* Download Button */}
               <button
+                onClick={() => {
+                  if (pattern.pdf_file) {
+                    window.open(`http://127.0.0.1:5000${pattern.pdf_file}`, '_blank')
+                  } else {
+                    alert('PDF file not available')
+                  }
+                }}
                 style={{ backgroundColor: '#5C768A' }}
                 className="w-full py-4 text-white rounded-lg font-bold text-lg hover:opacity-90 transition-opacity"
               >
@@ -194,73 +203,87 @@ function PatternDetailPage() {
           </div>
         </div>
 
-        <div 
-          style={{ backgroundColor: '#8FA9B6' }}
-          className="rounded-xl p-8 mb-8"
-        >
-          <h2 
-            style={{ color: '#1F2F3A' }}
-            className="text-2xl font-bold mb-4"
+        {/* Description */}
+        {pattern.description && (
+          <div 
+            style={{ backgroundColor: '#8FA9B6' }}
+            className="rounded-xl p-8 mb-8"
           >
-            Description
-          </h2>
-          <p 
-            style={{ color: '#1F2F3A' }}
-            className="leading-relaxed"
-          >
-            {pattern.description}
-          </p>
-        </div>
-
-        <div>
-          <h2 
-            style={{ color: '#1F2F3A' }}
-            className="text-3xl font-bold mb-2"
-          >
-            Similar Patterns You Might Like
-          </h2>
-          <p 
-            style={{ color: '#6E8594' }}
-            className="mb-6"
-          >
-            AI-Powered Recommendations
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {recommendations.map((rec) => (
-              <Link
-                key={rec.id}
-                to={`/pattern/${rec.id}`}
-                style={{ backgroundColor: '#8FA9B6' }}
-                className="rounded-xl overflow-hidden hover:opacity-90 transition-opacity"
-              >
-                <div 
-                  style={{ backgroundColor: '#D9CDB8' }}
-                  className="h-40 flex items-center justify-center"
-                >
-                  <span style={{ color: '#6E8594' }} className="text-4xl">
-                    📐
-                  </span>
-                </div>
-
-                <div className="p-4">
-                  <h3 
-                    style={{ color: '#1F2F3A' }}
-                    className="font-bold mb-2"
-                  >
-                    {rec.title}
-                  </h3>
-                  <div 
-                    style={{ color: '#6E8594' }}
-                    className="text-sm"
-                  >
-                    {rec.difficulty}
-                  </div>
-                </div>
-              </Link>
-            ))}
+            <h2 
+              style={{ color: '#1F2F3A' }}
+              className="text-2xl font-bold mb-4"
+            >
+              Description
+            </h2>
+            <p 
+              style={{ color: '#1F2F3A' }}
+              className="leading-relaxed"
+            >
+              {pattern.description}
+            </p>
           </div>
-        </div>
+        )}
+
+        {/* AI Recommendations */}
+        {recommendations.length > 0 && (
+          <div>
+            <h2 
+              style={{ color: '#1F2F3A' }}
+              className="text-3xl font-bold mb-2"
+            >
+              Similar Patterns You Might Like
+            </h2>
+            <p 
+              style={{ color: '#6E8594' }}
+              className="mb-6"
+            >
+              AI-Powered Recommendations
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {recommendations.map((rec) => (
+                <Link
+                  key={rec.id}
+                  to={`/pattern/${rec.id}`}
+                  style={{ backgroundColor: '#8FA9B6' }}
+                  className="rounded-xl overflow-hidden hover:opacity-90 transition-opacity"
+                >
+                  <div 
+                    style={{ backgroundColor: '#D9CDB8' }}
+                    className="h-40 flex items-center justify-center"
+                  >
+                    {rec.preview_image ? (
+                      <img 
+                        src={`http://127.0.0.1:5000${rec.preview_image}`}
+                        alt={rec.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span style={{ color: '#6E8594' }} className="text-4xl">
+                        📐
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="p-4">
+                    <h3 
+                      style={{ color: '#1F2F3A' }}
+                      className="font-bold mb-2"
+                    >
+                      {rec.title}
+                    </h3>
+                    <div 
+                      style={{ color: '#6E8594' }}
+                      className="text-sm"
+                    >
+                      {rec.difficulty?.name || 'N/A'}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

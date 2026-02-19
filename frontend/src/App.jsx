@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
 
 // Pages
 import HomePage from './pages/HomePage'
@@ -15,18 +16,20 @@ import Footer from './components/Footer'
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-      
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/browse" element={<BrowsePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/pattern/:id" element={<PatternDetailPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/admin" element={<AdminPage />} />
-      </Routes>
+      <AuthProvider>
+        <Navbar />
+        
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/browse" element={<BrowsePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/pattern/:id" element={<PatternDetailPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+        </Routes>
 
-      <Footer />
+        <Footer />
+      </AuthProvider>
     </BrowserRouter>
   )
 }

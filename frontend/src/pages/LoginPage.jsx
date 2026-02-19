@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 function LoginPage() {
-  const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('login') // 'login' or 'register'
+  const { login, register } = useAuth()
+  const [activeTab, setActiveTab] = useState('login')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   
-  // Login form state
   const [loginData, setLoginData] = useState({
     username: '',
     password: ''
   })
 
-  // Register form state
   const [registerData, setRegisterData] = useState({
     username: '',
     email: '',
@@ -19,21 +19,32 @@ function LoginPage() {
     full_name: ''
   })
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
-    console.log('Login:', loginData)
-    // TODO: Connect to backend API later
-    // For now, just redirect to dashboard
-    alert('Login functionality will be connected to backend API')
-    navigate('/dashboard')
+    setError('')
+    setLoading(true)
+
+    const result = await login(loginData)
+    
+    if (!result.success) {
+      setError(result.error)
+      setLoading(false)
+    }
+    // If success, AuthContext will redirect to dashboard
   }
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault()
-    console.log('Register:', registerData)
-    // TODO: Connect to backend API later
-    alert('Registration functionality will be connected to backend API')
-    navigate('/dashboard')
+    setError('')
+    setLoading(true)
+
+    const result = await register(registerData)
+    
+    if (!result.success) {
+      setError(result.error)
+      setLoading(false)
+    }
+    // If success, AuthContext will redirect to dashboard
   }
 
   return (
@@ -43,7 +54,6 @@ function LoginPage() {
         className="w-full max-w-md rounded-xl p-8"
       >
         
-        {/* Logo/Title */}
         <div className="text-center mb-8">
           <h1 
             style={{ color: '#1F2F3A' }}
@@ -59,10 +69,23 @@ function LoginPage() {
           </p>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div 
+            style={{ backgroundColor: '#f8d7da', color: '#721c24', borderColor: '#f5c6cb' }}
+            className="p-3 rounded-lg mb-4 text-sm border"
+          >
+            {error}
+          </div>
+        )}
+
         {/* Tabs */}
         <div className="flex gap-2 mb-6">
           <button
-            onClick={() => setActiveTab('login')}
+            onClick={() => {
+              setActiveTab('login')
+              setError('')
+            }}
             style={{ 
               backgroundColor: activeTab === 'login' ? '#5C768A' : 'transparent',
               color: activeTab === 'login' ? 'white' : '#1F2F3A'
@@ -72,7 +95,10 @@ function LoginPage() {
             Login
           </button>
           <button
-            onClick={() => setActiveTab('register')}
+            onClick={() => {
+              setActiveTab('register')
+              setError('')
+            }}
             style={{ 
               backgroundColor: activeTab === 'register' ? '#5C768A' : 'transparent',
               color: activeTab === 'register' ? 'white' : '#1F2F3A'
@@ -87,13 +113,12 @@ function LoginPage() {
         {activeTab === 'login' && (
           <form onSubmit={handleLogin}>
             
-            {/* Username/Email */}
             <div className="mb-4">
               <label 
                 style={{ color: '#1F2F3A' }}
                 className="block text-sm font-medium mb-2"
               >
-                Username or Email
+                Username
               </label>
               <input
                 type="text"
@@ -102,11 +127,10 @@ function LoginPage() {
                 onChange={(e) => setLoginData({...loginData, username: e.target.value})}
                 style={{ backgroundColor: '#E9DDC9', color: '#1F2F3A' }}
                 className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Enter your username or email"
+                placeholder="Enter your username"
               />
             </div>
 
-            {/* Password */}
             <div className="mb-6">
               <label 
                 style={{ color: '#1F2F3A' }}
@@ -125,25 +149,14 @@ function LoginPage() {
               />
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
+              disabled={loading}
               style={{ backgroundColor: '#5C768A' }}
-              className="w-full py-3 text-white rounded-lg font-bold hover:opacity-90 transition-opacity"
+              className="w-full py-3 text-white rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              Login
+              {loading ? 'Logging in...' : 'Login'}
             </button>
-
-            {/* Forgot Password Link */}
-            <div className="text-center mt-4">
-              <a 
-                href="#"
-                style={{ color: '#6E8594' }}
-                className="text-sm hover:opacity-70"
-              >
-                Forgot password?
-              </a>
-            </div>
 
           </form>
         )}
@@ -152,7 +165,6 @@ function LoginPage() {
         {activeTab === 'register' && (
           <form onSubmit={handleRegister}>
             
-            {/* Full Name */}
             <div className="mb-4">
               <label 
                 style={{ color: '#1F2F3A' }}
@@ -171,7 +183,6 @@ function LoginPage() {
               />
             </div>
 
-            {/* Username */}
             <div className="mb-4">
               <label 
                 style={{ color: '#1F2F3A' }}
@@ -190,7 +201,6 @@ function LoginPage() {
               />
             </div>
 
-            {/* Email */}
             <div className="mb-4">
               <label 
                 style={{ color: '#1F2F3A' }}
@@ -209,7 +219,6 @@ function LoginPage() {
               />
             </div>
 
-            {/* Password */}
             <div className="mb-6">
               <label 
                 style={{ color: '#1F2F3A' }}
@@ -228,22 +237,14 @@ function LoginPage() {
               />
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
+              disabled={loading}
               style={{ backgroundColor: '#5C768A' }}
-              className="w-full py-3 text-white rounded-lg font-bold hover:opacity-90 transition-opacity"
+              className="w-full py-3 text-white rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              Create Account
+              {loading ? 'Creating account...' : 'Create Account'}
             </button>
-
-            {/* Terms */}
-            <p 
-              style={{ color: '#6E8594' }}
-              className="text-xs text-center mt-4"
-            >
-              By creating an account, you agree to our Terms of Service
-            </p>
 
           </form>
         )}
@@ -254,7 +255,10 @@ function LoginPage() {
             <p style={{ color: '#6E8594' }} className="text-sm">
               Don't have an account?{' '}
               <button
-                onClick={() => setActiveTab('register')}
+                onClick={() => {
+                  setActiveTab('register')
+                  setError('')
+                }}
                 style={{ color: '#5C768A' }}
                 className="font-medium hover:opacity-70"
               >
@@ -265,7 +269,10 @@ function LoginPage() {
             <p style={{ color: '#6E8594' }} className="text-sm">
               Already have an account?{' '}
               <button
-                onClick={() => setActiveTab('login')}
+                onClick={() => {
+                  setActiveTab('login')
+                  setError('')
+                }}
                 style={{ color: '#5C768A' }}
                 className="font-medium hover:opacity-70"
               >

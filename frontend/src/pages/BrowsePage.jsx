@@ -1,50 +1,74 @@
 import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { patternsAPI } from '../services/api'
 
 function BrowsePage() {
   const [searchParams] = useSearchParams()
   
-  // Filter states
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '')
   const [selectedDifficulty, setSelectedDifficulty] = useState('')
   const [patterns, setPatterns] = useState([])
-
-  // Categories and difficulties
-  const categories = [
-    { id: 1, name: 'Dresses' },
-    { id: 2, name: 'Tops & Blouses' },
-    { id: 3, name: 'Bottoms' },
-    { id: 4, name: 'Outerwear' },
-    { id: 5, name: 'Accessories' },
-    { id: 6, name: 'Sleepwear' },
-    { id: 7, name: 'Activewear' },
-    { id: 8, name: 'Childrenswear' },
-  ]
-
-  const difficulties = [
-    { id: 1, name: 'Beginner' },
-    { id: 2, name: 'Easy' },
-    { id: 3, name: 'Intermediate' },
-    { id: 4, name: 'Advanced' },
-    { id: 5, name: 'Expert' },
-  ]
-
-  // Placeholder patterns - we'll connect to API later
-  const placeholderPatterns = [
-    { id: 1, title: 'Blue Summer Dress', category: 'Dresses', difficulty: 'Easy', downloads: 245 },
-    { id: 2, title: 'Formal Evening Gown', category: 'Dresses', difficulty: 'Advanced', downloads: 198 },
-    { id: 3, title: 'Casual T-Shirt', category: 'Tops & Blouses', difficulty: 'Beginner', downloads: 312 },
-    { id: 4, title: 'Winter Coat', category: 'Outerwear', difficulty: 'Expert', downloads: 156 },
-    { id: 5, title: 'Cotton Blouse', category: 'Tops & Blouses', difficulty: 'Intermediate', downloads: 287 },
-    { id: 6, title: 'Denim Jeans', category: 'Bottoms', difficulty: 'Advanced', downloads: 203 },
-  ]
+  const [categories, setCategories] = useState([])
+  const [difficulties, setDifficulties] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // For now, just use placeholder data
-    // Later we'll fetch from API
-    setPatterns(placeholderPatterns)
-  }, [])
+    loadCategories()
+    loadDifficulties()
+    loadPatterns()
+  }, [selectedCategory, selectedDifficulty, searchQuery])
+
+  const loadCategories = async () => {
+    try {
+      const data = await patternsAPI.getCategories()
+      setCategories(data.categories)
+    } catch (error) {
+      console.error('Failed to load categories:', error)
+    }
+  }
+
+  const loadDifficulties = async () => {
+    try {
+      const data = await patternsAPI.getDifficulties()
+      setDifficulties(data.difficulties)
+    } catch (error) {
+      console.error('Failed to load difficulties:', error)
+    }
+  }
+
+  const loadPatterns = async () => {
+    try {
+      setLoading(true)
+      const params = {}
+      if (selectedCategory) params.category_id = selectedCategory
+      if (selectedDifficulty) params.difficulty_id = selectedDifficulty
+      
+      const data = await patternsAPI.getPatterns(params)
+      setPatterns(data.patterns || [])
+    } catch (error) {
+      console.error('Failed to load patterns:', error)
+      setPatterns([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSearch = async () => {
+    if (searchQuery.trim()) {
+      try {
+        setLoading(true)
+        const data = await patternsAPI.searchPatterns(searchQuery)
+        setPatterns(data.patterns || [])
+      } catch (error) {
+        console.error('Search failed:', error)
+      } finally {
+        setLoading(false)
+      }
+    } else {
+      loadPatterns()
+    }
+  }
 
   const handleClearFilters = () => {
     setSearchQuery('')
@@ -56,7 +80,6 @@ function BrowsePage() {
     <div className="min-h-screen px-6 py-8">
       <div className="max-w-7xl mx-auto">
         
-        {/* Page Header */}
         <div className="mb-8 flex items-center justify-between">
           <h1 
             style={{ color: '#1F2F3A' }}
@@ -68,7 +91,7 @@ function BrowsePage() {
             style={{ color: '#6E8594' }}
             className="text-lg"
           >
-            Showing {patterns.length} patterns
+            {loading ? 'Loading...' : `Showing ${patterns.length} patterns`}
           </span>
         </div>
 
@@ -93,16 +116,24 @@ function BrowsePage() {
                   style={{ color: '#1F2F3A' }}
                   className="block text-sm font-medium mb-2"
                 >
-                  🔍 Search
+                  Search
                 </label>
                 <input
                   type="text"
                   placeholder="Pattern name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   style={{ backgroundColor: '#E9DDC9', color: '#1F2F3A' }}
                   className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
+                <button
+                  onClick={handleSearch}
+                  style={{ backgroundColor: '#5C768A' }}
+                  className="w-full mt-2 py-2 text-white rounded-lg text-sm hover:opacity-90"
+                >
+                  Search
+                </button>
               </div>
 
               {/* Category Filter */}
@@ -159,7 +190,6 @@ function BrowsePage() {
                 </div>
               </div>
 
-              {/* Clear Filters Button */}
               <button
                 onClick={handleClearFilters}
                 style={{ backgroundColor: '#5C768A' }}
@@ -173,86 +203,69 @@ function BrowsePage() {
 
           {/* PATTERN GRID */}
           <main className="flex-1">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              
-              {patterns.map((pattern) => (
-                <Link
-                  key={pattern.id}
-                  to={`/pattern/${pattern.id}`}
-                  style={{ backgroundColor: '#8FA9B6' }}
-                  className="rounded-xl overflow-hidden hover:opacity-90 transition-opacity"
-                >
-                  {/* Image Placeholder */}
-                  <div 
-                    style={{ backgroundColor: '#D9CDB8' }}
-                    className="h-48 flex items-center justify-center"
+            {loading ? (
+              <div className="text-center py-12">
+                <p style={{ color: '#6E8594' }}>Loading patterns...</p>
+              </div>
+            ) : patterns.length === 0 ? (
+              <div className="text-center py-12">
+                <p style={{ color: '#6E8594' }}>No patterns found. Try adjusting your filters.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                {patterns.map((pattern) => (
+                  <Link
+                    key={pattern.id}
+                    to={`/pattern/${pattern.id}`}
+                    style={{ backgroundColor: '#8FA9B6' }}
+                    className="rounded-xl overflow-hidden hover:opacity-90 transition-opacity"
                   >
-                    <span style={{ color: '#6E8594' }} className="text-5xl">
-                      📐
-                    </span>
-                  </div>
-
-                  {/* Pattern Info */}
-                  <div className="p-4">
-                    <h3 
-                      style={{ color: '#1F2F3A' }}
-                      className="font-bold text-lg mb-2"
-                    >
-                      {pattern.title}
-                    </h3>
+                    {/* Image */}
                     <div 
-                      style={{ color: '#6E8594' }}
-                      className="text-sm mb-2"
+                      style={{ backgroundColor: '#D9CDB8' }}
+                      className="h-48 flex items-center justify-center"
                     >
-                      {pattern.category}
+                      {pattern.preview_image ? (
+                        <img 
+                          src={`http://127.0.0.1:5000${pattern.preview_image}`}
+                          alt={pattern.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span style={{ color: '#6E8594' }} className="text-5xl">
+                          📐
+                        </span>
+                      )}
                     </div>
-                    <div 
-                      style={{ color: '#6E8594' }}
-                      className="text-sm flex items-center justify-between"
-                    >
-                      <span>⭐ {pattern.difficulty}</span>
-                      <span>📥 {pattern.downloads}</span>
+
+                    {/* Pattern Info */}
+                    <div className="p-4">
+                      <h3 
+                        style={{ color: '#1F2F3A' }}
+                        className="font-bold text-lg mb-2 line-clamp-1"
+                      >
+                        {pattern.title}
+                      </h3>
+                      <div 
+                        style={{ color: '#6E8594' }}
+                        className="text-sm mb-2"
+                      >
+                        {pattern.category?.name || 'Uncategorized'}
+                      </div>
+                      <div 
+                        style={{ color: '#6E8594' }}
+                        className="text-sm flex items-center justify-between"
+                      >
+                        <span>{pattern.difficulty?.name || 'N/A'}</span>
+                        <span>{pattern.download_count || 0} downloads</span>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
 
-            </div>
-
-            {/* Pagination */}
-            <div className="mt-8 flex justify-center gap-2">
-              <button
-                style={{ backgroundColor: '#5C768A' }}
-                className="px-4 py-2 text-white rounded-lg hover:opacity-90 transition-opacity"
-              >
-                ←
-              </button>
-              <button
-                style={{ backgroundColor: '#5C768A' }}
-                className="px-4 py-2 text-white rounded-lg font-bold"
-              >
-                1
-              </button>
-              <button
-                style={{ backgroundColor: '#8FA9B6' }}
-                className="px-4 py-2 text-white rounded-lg hover:opacity-90 transition-opacity"
-              >
-                2
-              </button>
-              <button
-                style={{ backgroundColor: '#8FA9B6' }}
-                className="px-4 py-2 text-white rounded-lg hover:opacity-90 transition-opacity"
-              >
-                3
-              </button>
-              <button
-                style={{ backgroundColor: '#5C768A' }}
-                className="px-4 py-2 text-white rounded-lg hover:opacity-90 transition-opacity"
-              >
-                →
-              </button>
-            </div>
-
+              </div>
+            )}
           </main>
 
         </div>
