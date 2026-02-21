@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage'
 import PatternDetailPage from './pages/PatternDetailPage'
 import DashboardPage from './pages/DashboardPage'
 import AdminPage from './pages/AdminPage'
+import UploadPatternPage from './pages/UploadPatternPage'
 
 // Components
 import Navbar from './components/Navbar'
@@ -26,6 +27,7 @@ function App() {
           <Route path="/pattern/:id" element={<PatternDetailPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/upload" element={<UploadPatternPage />} />
         </Routes>
 
         <Footer />

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
@@ -31,6 +31,13 @@ def create_app(config_name='development'):
     upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads')
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
+
+    
+    # Serve uploaded files
+    @app.route('/uploads/<path:filename>')
+    def serve_upload(filename):
+     uploads_dir = os.path.join(os.path.dirname(__file__), 'uploads')
+     return send_from_directory(uploads_dir, filename)
     
     # Import all models and create database tables
     with app.app_context():

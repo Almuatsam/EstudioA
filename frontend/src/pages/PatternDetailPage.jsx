@@ -14,16 +14,16 @@ function PatternDetailPage() {
   }, [id])
 
   const loadPattern = async () => {
-    try {
-      setLoading(true)
-      const data = await patternsAPI.getPattern(id)
-      setPattern(data)
-    } catch (error) {
-      console.error('Failed to load pattern:', error)
-    } finally {
-      setLoading(false)
-    }
+  try {
+    setLoading(true)
+    const data = await patternsAPI.getPattern(id)
+    setPattern(data.pattern)  
+  } catch (error) {
+    console.error('Failed to load pattern:', error)
+  } finally {
+    setLoading(false)
   }
+}
 
   const loadRecommendations = async () => {
     try {

@@ -68,11 +68,11 @@ function HomePage() {
               Browse All Patterns
             </Link>
             <Link
-              to="/login"
+              to="/upload"
               style={{ 
-                backgroundColor: 'transparent',
-                border: '2px solid #A9BFCA',
-                color: '#5C768A'
+              backgroundColor: 'transparent',
+              border: '2px solid #A9BFCA',
+              color: '#5C768A'
               }}
               className="px-8 py-3 rounded-lg font-medium hover:opacity-80 transition-opacity"
             >
