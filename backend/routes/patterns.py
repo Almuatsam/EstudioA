@@ -26,6 +26,7 @@ def get_all_patterns():
         category_id = request.args.get('category_id', type=int)
         difficulty_id = request.args.get('difficulty_id', type=int)
         search_term = request.args.get('search', type=str)
+        user_id = request.args.get('user_id', type=int)  #filter by user
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
         
@@ -38,6 +39,9 @@ def get_all_patterns():
         
         if difficulty_id:
             query = query.filter_by(difficulty_id=difficulty_id)
+        
+        if user_id:  #filter by user_id
+            query = query.filter_by(user_id=user_id)
         
         if search_term:
             search_pattern = f"%{search_term}%"
@@ -73,9 +77,11 @@ def get_all_patterns():
                 } if pattern.difficulty else None,
                 'tags': pattern.get_tags_list(),
                 'preview_image': pattern.preview_image,
+                'pdf_file': pattern.pdf_file,  # ADDED - needed for download
                 'designer_name': pattern.designer_name,
                 'download_count': pattern.download_count,
                 'view_count': pattern.view_count,
+                'is_approved': pattern.is_approved,  #include approval status
                 'created_at': pattern.created_at.isoformat() if pattern.created_at else None
             })
         
@@ -174,6 +180,7 @@ def create_pattern():
             pdf_file=data['pdf_file'],
             preview_image=data.get('preview_image', ''),
             designer_name=data.get('designer_name', user.full_name),
+            user_id=current_user_id,  #track who uploaded
             is_approved=False,  # Requires admin approval
             is_active=True,
             created_at=datetime.utcnow()
@@ -208,6 +215,47 @@ def create_pattern():
         return jsonify({'error': str(e)}), 500
 
 
+# Get user's own patterns (both approved and pending)
+@patterns_bp.route('/my-patterns', methods=['GET'])
+@jwt_required()
+def get_my_patterns():
+    """Get current user's patterns"""
+    try:
+        current_user_id = get_jwt_identity()
+        
+        patterns = Pattern.query.filter_by(
+            user_id=current_user_id,
+            is_active=True
+        ).order_by(Pattern.created_at.desc()).all()
+        
+        patterns_list = []
+        for pattern in patterns:
+            patterns_list.append({
+                'id': pattern.id,
+                'title': pattern.title,
+                'description': pattern.description,
+                'category': {
+                    'id': pattern.category.id,
+                    'name': pattern.category.name
+                } if pattern.category else None,
+                'difficulty': {
+                    'id': pattern.difficulty.id,
+                    'name': pattern.difficulty.name
+                } if pattern.difficulty else None,
+                'preview_image': pattern.preview_image,
+                'is_approved': pattern.is_approved,
+                'created_at': pattern.created_at.isoformat() if pattern.created_at else None
+            })
+        
+        return jsonify({
+            'patterns': patterns_list,
+            'total': len(patterns_list)
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @patterns_bp.route('/categories', methods=['GET'])
 def get_categories():
     """Get all pattern categories"""
@@ -228,6 +276,8 @@ def get_categories():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+        
 @patterns_bp.route('/difficulties', methods=['GET'])
 def get_difficulties():
     """Get all difficulty levels"""

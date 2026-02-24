@@ -63,6 +63,7 @@ class Pattern(db.Model):
     
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
     difficulty_id = db.Column(db.Integer, db.ForeignKey('difficulty_levels.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  #track uploader
     
     pdf_file = db.Column(db.String(255), nullable=False)
     preview_image = db.Column(db.String(255))

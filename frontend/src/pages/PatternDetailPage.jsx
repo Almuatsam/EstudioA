@@ -188,7 +188,14 @@ function PatternDetailPage() {
               <button
                 onClick={() => {
                   if (pattern.pdf_file) {
-                    window.open(`http://127.0.0.1:5000${pattern.pdf_file}`, '_blank')
+                    // Create a temporary link and trigger download
+                    const link = document.createElement('a')
+                    link.href = `http://127.0.0.1:5000${pattern.pdf_file}`
+                    link.download = `${pattern.title}.pdf`
+                    link.target = '_blank'
+                    document.body.appendChild(link)
+                    link.click()
+                    document.body.removeChild(link)
                   } else {
                     alert('PDF file not available')
                   }

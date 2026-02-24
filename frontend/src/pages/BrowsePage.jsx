@@ -1,3 +1,4 @@
+import FlipCard from '../components/FlipCard'
 import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { patternsAPI } from '../services/api'
@@ -213,57 +214,9 @@ function BrowsePage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
                 {patterns.map((pattern) => (
-                  <Link
-                    key={pattern.id}
-                    to={`/pattern/${pattern.id}`}
-                    style={{ backgroundColor: '#8FA9B6' }}
-                    className="rounded-xl overflow-hidden hover:opacity-90 transition-opacity"
-                  >
-                    {/* Image */}
-                    <div 
-                      style={{ backgroundColor: '#D9CDB8' }}
-                      className="h-48 flex items-center justify-center"
-                    >
-                      {pattern.preview_image ? (
-                        <img 
-                          src={`http://127.0.0.1:5000${pattern.preview_image}`}
-                          alt={pattern.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span style={{ color: '#6E8594' }} className="text-5xl">
-                          📐
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Pattern Info */}
-                    <div className="p-4">
-                      <h3 
-                        style={{ color: '#1F2F3A' }}
-                        className="font-bold text-lg mb-2 line-clamp-1"
-                      >
-                        {pattern.title}
-                      </h3>
-                      <div 
-                        style={{ color: '#6E8594' }}
-                        className="text-sm mb-2"
-                      >
-                        {pattern.category?.name || 'Uncategorized'}
-                      </div>
-                      <div 
-                        style={{ color: '#6E8594' }}
-                        className="text-sm flex items-center justify-between"
-                      >
-                        <span>{pattern.difficulty?.name || 'N/A'}</span>
-                        <span>{pattern.download_count || 0} downloads</span>
-                      </div>
-                    </div>
-                  </Link>
+                  <FlipCard key={pattern.id} pattern={pattern} />
                 ))}
-
               </div>
             )}
           </main>
