@@ -1,3 +1,4 @@
+import LoadingSpinner from '../components/LoadingSpinner'
 import FlipCard from '../components/FlipCard'
 import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -205,8 +206,8 @@ function BrowsePage() {
           {/* PATTERN GRID */}
           <main className="flex-1">
             {loading ? (
-              <div className="text-center py-12">
-                <p style={{ color: '#6E8594' }}>Loading patterns...</p>
+              <div className="py-20">
+                <LoadingSpinner size="large" text="Loading patterns..." />
               </div>
             ) : patterns.length === 0 ? (
               <div className="text-center py-12">

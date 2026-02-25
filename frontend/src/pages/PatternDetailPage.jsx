@@ -1,3 +1,4 @@
+import LoadingSpinner from '../components/LoadingSpinner'
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { patternsAPI, recommendationsAPI } from '../services/api'
@@ -36,8 +37,8 @@ function PatternDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p style={{ color: '#6E8594' }}>Loading pattern...</p>
+      <div className="min-h-screen flex items-center justify-center bg-pattern-soft">
+        <LoadingSpinner size="large" text="Loading pattern..." />
       </div>
     )
   }

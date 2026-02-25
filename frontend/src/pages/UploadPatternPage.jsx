@@ -1,3 +1,4 @@
+import LoadingSpinner from '../components/LoadingSpinner'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -131,7 +132,7 @@ function UploadPatternPage() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-8">
+    <div className="min-h-screen px-6 py-8 bg-pattern-soft">
       <div className="max-w-4xl mx-auto">
         
         <div className="mb-8">
@@ -364,12 +365,10 @@ function UploadPatternPage() {
           {/* Upload Progress */}
           {uploadProgress && (
             <div 
-              style={{ backgroundColor: '#A9BFCA' }}
-              className="rounded-xl p-4 mb-6 text-center"
+              style={{ backgroundColor: '#8FA9B6' }}
+              className="rounded-xl p-8 mb-6"
             >
-              <p style={{ color: '#1F2F3A' }} className="font-medium">
-                {uploadProgress}
-              </p>
+              <LoadingSpinner size="medium" text={uploadProgress} />
             </div>
           )}
 

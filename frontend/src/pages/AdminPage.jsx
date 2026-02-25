@@ -1,3 +1,4 @@
+import LoadingSpinner from '../components/LoadingSpinner'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -77,7 +78,7 @@ function AdminPage() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-pattern-soft">
         <div className="text-center">
           <h1 style={{ color: '#1F2F3A' }} className="text-3xl font-bold mb-4">
             Access Denied
@@ -98,7 +99,7 @@ function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-8">
+    <div className="min-h-screen px-6 py-8 bg-pattern-soft">
       <div className="max-w-7xl mx-auto">
         
         <div className="mb-8">
@@ -266,8 +267,8 @@ function AdminPage() {
                 </h2>
 
                 {loading ? (
-                  <div className="text-center py-12">
-                    <p style={{ color: '#6E8594' }}>Loading...</p>
+                  <div className="py-20">
+                    <LoadingSpinner size="large" text="Loading pending patterns..." />
                   </div>
                 ) : pendingPatterns.length === 0 ? (
                   <div 

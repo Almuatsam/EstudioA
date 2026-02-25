@@ -16,7 +16,8 @@ function LoginPage() {
     username: '',
     email: '',
     password: '',
-    full_name: ''
+    full_name: '',
+    role: 'user'  // NEW: Default to 'user'
   })
 
   const handleLogin = async (e) => {
@@ -30,7 +31,6 @@ function LoginPage() {
       setError(result.error)
       setLoading(false)
     }
-    // If success, AuthContext will redirect to dashboard
   }
 
   const handleRegister = async (e) => {
@@ -44,11 +44,10 @@ function LoginPage() {
       setError(result.error)
       setLoading(false)
     }
-    // If success, AuthContext will redirect to dashboard
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-pattern-soft">
       <div 
         style={{ backgroundColor: '#8FA9B6' }}
         className="w-full max-w-md rounded-xl p-8"
@@ -153,9 +152,16 @@ function LoginPage() {
               type="submit"
               disabled={loading}
               style={{ backgroundColor: '#5C768A' }}
-              className="w-full py-3 text-white rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="w-full py-3 text-white rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Logging in...</span>
+                </>
+              ) : (
+                'Login'
+              )}
             </button>
 
           </form>
@@ -219,7 +225,7 @@ function LoginPage() {
               />
             </div>
 
-            <div className="mb-6">
+            <div className="mb-4">
               <label 
                 style={{ color: '#1F2F3A' }}
                 className="block text-sm font-medium mb-2"
@@ -237,13 +243,86 @@ function LoginPage() {
               />
             </div>
 
+            {/* NEW: Role Selection */}
+            <div className="mb-6">
+              <label 
+                style={{ color: '#1F2F3A' }}
+                className="block text-sm font-medium mb-3"
+              >
+                I am a:
+              </label>
+              
+              <div className="space-y-3">
+                {/* User Radio Button */}
+                <label 
+                  className="flex items-start gap-3 p-4 rounded-lg cursor-pointer transition-all"
+                  style={{ 
+                    backgroundColor: registerData.role === 'user' ? '#D9CDB8' : '#E9DDC9',
+                    border: registerData.role === 'user' ? '2px solid #5C768A' : '2px solid transparent'
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="role"
+                    value="user"
+                    checked={registerData.role === 'user'}
+                    onChange={(e) => setRegisterData({...registerData, role: e.target.value})}
+                    className="mt-1"
+                    style={{ accentColor: '#5C768A' }}
+                  />
+                  <div className="flex-1">
+                    <div style={{ color: '#1F2F3A' }} className="font-bold mb-1">
+                      User
+                    </div>
+                    <div style={{ color: '#6E8594' }} className="text-sm">
+                      Browse and download patterns
+                    </div>
+                  </div>
+                </label>
+
+                {/* Designer Radio Button */}
+                <label 
+                  className="flex items-start gap-3 p-4 rounded-lg cursor-pointer transition-all"
+                  style={{ 
+                    backgroundColor: registerData.role === 'designer' ? '#D9CDB8' : '#E9DDC9',
+                    border: registerData.role === 'designer' ? '2px solid #5C768A' : '2px solid transparent'
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="role"
+                    value="designer"
+                    checked={registerData.role === 'designer'}
+                    onChange={(e) => setRegisterData({...registerData, role: e.target.value})}
+                    className="mt-1"
+                    style={{ accentColor: '#5C768A' }}
+                  />
+                  <div className="flex-1">
+                    <div style={{ color: '#1F2F3A' }} className="font-bold mb-1">
+                      Designer
+                    </div>
+                    <div style={{ color: '#6E8594' }} className="text-sm">
+                      Upload and share my patterns
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
               style={{ backgroundColor: '#5C768A' }}
-              className="w-full py-3 text-white rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="w-full py-3 text-white rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Creating account...</span>
+                </>
+              ) : (
+                'Create Account'
+              )}
             </button>
 
           </form>
