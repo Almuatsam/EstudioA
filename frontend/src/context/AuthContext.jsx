@@ -1,46 +1,53 @@
-import { createContext, useState, useContext, useEffect } from 'react'
-import { authAPI } from '../services/api'
+import { createContext, useContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { authAPI } from '../services/api'
 
-const AuthContext = createContext()
+const AuthContext = createContext(null)
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
-  // Check if user is logged in on app load
   useEffect(() => {
-    const token = localStorage.getItem('access_token')
-    if (token) {
-      loadUser()
-    } else {
-      setLoading(false)
-    }
+    loadUser()
   }, [])
 
-  // Load user profile
   const loadUser = async () => {
-    try {
-      const response = await authAPI.getProfile()
-      setUser(response.user)
-    } catch (error) {
-      console.error('Failed to load user:', error)
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('refresh_token')
-    } finally {
-      setLoading(false)
+    const token = localStorage.getItem('token')
+    if (token) {
+      try {
+        const data = await authAPI.getCurrentUser()
+        setUser(data.user)
+        setIsAuthenticated(true)
+        setIsAdmin(data.user.role === 'admin')
+      } catch (error) {
+        console.error('Failed to load user:', error)
+        localStorage.removeItem('token')
+      }
     }
+    setLoading(false)
   }
 
-  // Login
   const login = async (credentials) => {
     try {
-      const response = await authAPI.login(credentials)
-      localStorage.setItem('access_token', response.access_token)
-      localStorage.setItem('refresh_token', response.refresh_token)
-      setUser(response.user)
-      navigate('/dashboard')
+      const data = await authAPI.login(credentials)
+      localStorage.setItem('token', data.token)
+      setUser(data.user)
+      setIsAuthenticated(true)
+      setIsAdmin(data.user.role === 'admin')
+      
+      // Redirect based on user role
+      if (data.user.role === 'designer') {
+        navigate('/designer-dashboard')
+      } else if (data.user.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
+      
       return { success: true }
     } catch (error) {
       return { 
@@ -50,14 +57,23 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  // Register
   const register = async (userData) => {
     try {
-      const response = await authAPI.register(userData)
-      localStorage.setItem('access_token', response.access_token)
-      localStorage.setItem('refresh_token', response.refresh_token)
-      setUser(response.user)
-      navigate('/dashboard')
+      const data = await authAPI.register(userData)
+      localStorage.setItem('token', data.token)
+      setUser(data.user)
+      setIsAuthenticated(true)
+      setIsAdmin(data.user.role === 'admin')
+      
+      // Redirect based on user role
+      if (data.user.role === 'designer') {
+        navigate('/designer-dashboard')
+      } else if (data.user.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
+      
       return { success: true }
     } catch (error) {
       return { 
@@ -67,36 +83,33 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  // Logout
   const logout = () => {
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
+    localStorage.removeItem('token')
     setUser(null)
+    setIsAuthenticated(false)
+    setIsAdmin(false)
     navigate('/')
   }
 
-  const value = {
-    user,
-    loading,
-    login,
-    register,
-    logout,
-    isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin'
-  }
-
   return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
+    <AuthContext.Provider value={{ 
+      user, 
+      isAuthenticated, 
+      isAdmin, 
+      loading, 
+      login, 
+      register, 
+      logout 
+    }}>
+      {children}
     </AuthContext.Provider>
   )
 }
 
-// Custom hook to use auth context
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider')
+    throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
 }

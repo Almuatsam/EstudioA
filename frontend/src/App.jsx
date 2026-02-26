@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 
 // Pages
+import DesignerDashboardPage from './pages/DesignerDashboardPage'
 import HomePage from './pages/HomePage'
 import BrowsePage from './pages/BrowsePage'
 import LoginPage from './pages/LoginPage'
@@ -28,6 +29,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/upload" element={<UploadPatternPage />} />
+          <Route path="/designer-dashboard" element={<DesignerDashboardPage />} />
         </Routes>
 
         <Footer />

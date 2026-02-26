@@ -6,6 +6,9 @@ function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { user, isAuthenticated, isAdmin, logout } = useAuth()
 
+  // Determine dashboard link based on user role
+  const dashboardLink = user?.role === 'designer' ? '/designer-dashboard' : '/dashboard'
+
   return (
     <nav style={{ backgroundColor: '#243A4D' }} className="px-6 py-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -46,7 +49,7 @@ function Navbar() {
             /* Logged IN - show user menu */
             <div className="flex items-center gap-3">
               <Link
-                to="/dashboard"
+                to={dashboardLink}
                 className="text-white hover:opacity-70 transition-opacity font-medium"
               >
                 Dashboard
@@ -105,7 +108,7 @@ function Navbar() {
           {isAuthenticated ? (
             <>
               <Link
-                to="/dashboard"
+                to={dashboardLink}
                 className="text-white hover:opacity-70 font-medium"
                 onClick={() => setMenuOpen(false)}
               >

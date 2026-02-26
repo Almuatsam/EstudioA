@@ -79,7 +79,7 @@ function BrowsePage() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-8">
+    <div className="min-h-screen px-6 py-8 bg-pattern-soft">
       <div className="max-w-7xl mx-auto">
         
         <div className="mb-8 flex items-center justify-between">
