@@ -7,7 +7,7 @@ function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth()
 
   // Determine dashboard link based on user role
-  const dashboardLink = user?.role === 'designer' ? '/designer-dashboard' : '/dashboard'
+  const dashboardLink = user?.role === 'designer' ? '/designer-dashboard' : '/account'
 
   return (
     <nav style={{ backgroundColor: '#243A4D' }} className="px-6 py-4">
@@ -53,6 +53,12 @@ function Navbar() {
                 className="text-white hover:opacity-70 transition-opacity font-medium"
               >
                 Dashboard
+              </Link>
+              <Link
+                to="/account"
+                className="text-white hover:opacity-70 transition-opacity font-medium"
+              >
+                Account
               </Link>
               <span style={{ color: '#A9BFCA' }} className="text-sm">
                 {user?.username}
@@ -113,6 +119,13 @@ function Navbar() {
                 onClick={() => setMenuOpen(false)}
               >
                 Dashboard
+              </Link>
+              <Link
+                to="/account"
+                className="text-white hover:opacity-70 font-medium"
+                onClick={() => setMenuOpen(false)}
+              >
+                Account
               </Link>
               {isAdmin && (
                 <Link

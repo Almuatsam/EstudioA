@@ -17,7 +17,8 @@ class User(db.Model):
     # Profile fields
     username = db.Column(db.String(80), unique=True, nullable=False)
     full_name = db.Column(db.String(120))
-    
+    gender = db.Column(db.String(10), nullable=True) 
+
     # Role management
     role = db.Column(db.String(20), default='user', nullable=False)
     # Roles: 'user', 'designer', 'admin'
@@ -50,6 +51,7 @@ class User(db.Model):
             'email': self.email,
             'username': self.username,
             'full_name': self.full_name,
+            'gender': self.gender,
             'role': self.role,
             'is_active': self.is_active,
             'is_verified': self.is_verified,

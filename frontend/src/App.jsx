@@ -7,9 +7,9 @@ import HomePage from './pages/HomePage'
 import BrowsePage from './pages/BrowsePage'
 import LoginPage from './pages/LoginPage'
 import PatternDetailPage from './pages/PatternDetailPage'
-import DashboardPage from './pages/DashboardPage'
 import AdminPage from './pages/AdminPage'
 import UploadPatternPage from './pages/UploadPatternPage'
+import UserAccountPage from './pages/UserAccountPage'
 
 // Components
 import Navbar from './components/Navbar'
@@ -26,7 +26,7 @@ function App() {
           <Route path="/browse" element={<BrowsePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/pattern/:id" element={<PatternDetailPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/account" element={<UserAccountPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/upload" element={<UploadPatternPage />} />
           <Route path="/designer-dashboard" element={<DesignerDashboardPage />} />

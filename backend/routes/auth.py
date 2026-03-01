@@ -37,6 +37,7 @@ def register():
             email=data['email'],
             password_hash=hashed_password,
             full_name=data['full_name'],
+            gender=data.get('gender'),  # NEW: Accept gender from registration
             role=data.get('role', 'user'),  # Default to 'user', can be 'user', 'designer', 'admin'
             created_at=datetime.utcnow()
         )
@@ -56,8 +57,10 @@ def register():
                 'username': new_user.username,
                 'email': new_user.email,
                 'full_name': new_user.full_name,
+                'gender': new_user.gender,
                 'role': new_user.role
             },
+            'token': access_token,
             'access_token': access_token,
             'refresh_token': refresh_token
         }), 201
@@ -103,8 +106,10 @@ def login():
                 'username': user.username,
                 'email': user.email,
                 'full_name': user.full_name,
+                'gender': user.gender,
                 'role': user.role
             },
+            'token': access_token,
             'access_token': access_token,
             'refresh_token': refresh_token
         }), 200
@@ -148,6 +153,7 @@ def get_profile():
                 'username': user.username,
                 'email': user.email,
                 'full_name': user.full_name,
+                'gender': user.gender,
                 'role': user.role,
                 'is_active': user.is_active,
                 'is_verified': user.is_verified,
@@ -155,6 +161,44 @@ def get_profile():
                 'last_login': user.last_login.isoformat() if user.last_login else None
             }
         }), 200
+    
         
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@auth_bp.route('/change-password', methods=['POST'])
+@jwt_required()
+def change_password():
+    """Change user's password"""
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(int(current_user_id))
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        data = request.get_json()
+        
+        # Validate required fields
+        if 'current_password' not in data or 'new_password' not in data:
+            return jsonify({'error': 'Current password and new password are required'}), 400
+        
+        # Check current password
+        if not bcrypt.check_password_hash(user.password_hash, data['current_password']):
+            return jsonify({'error': 'Current password is incorrect'}), 401
+        
+        # Validate new password
+        if len(data['new_password']) < 8:
+            return jsonify({'error': 'New password must be at least 8 characters'}), 400
+        
+        # Set new password
+        hashed_password = bcrypt.generate_password_hash(data['new_password']).decode('utf-8')
+        user.password_hash = hashed_password
+        db.session.commit()
+        
+        return jsonify({'message': 'Password changed successfully'}), 200
+        
+    except Exception as e:
+        db.session.rollback()
         return jsonify({'error': str(e)}), 500

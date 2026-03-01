@@ -46,6 +46,8 @@ def create_app(config_name='development'):
         from models.pattern import Pattern, Category, DifficultyLevel
         from models.upload import Upload
         from models.history import History
+        from models.favorite import Favorite  
+        from models.download_history import DownloadHistory 
         
         db.create_all()
         print("Database tables created successfully!")
@@ -56,13 +58,19 @@ def create_app(config_name='development'):
     from routes.admin import admin_bp
     from routes.upload import upload_bp
     from routes.recommendations import recommendations_bp
+    from routes.favorites import favorites_bp
+    from routes.downloads import downloads_bp
+    from routes.user import user_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(patterns_bp, url_prefix='/api/patterns')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
     app.register_blueprint(upload_bp, url_prefix='/api/upload')
     app.register_blueprint(recommendations_bp, url_prefix='/api/recommendations')
-    
+    app.register_blueprint(favorites_bp, url_prefix='/api/favorites')  
+    app.register_blueprint(downloads_bp, url_prefix='/api/downloads')  
+    app.register_blueprint(user_bp, url_prefix='/api/user')  
+
     # Health check route
     @app.route('/')
     def index():

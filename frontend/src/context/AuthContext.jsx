@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
       } else if (data.user.role === 'admin') {
         navigate('/admin')
       } else {
-        navigate('/dashboard')
+        navigate('/account')
       }
       
       return { success: true }
@@ -71,7 +71,7 @@ export function AuthProvider({ children }) {
       } else if (data.user.role === 'admin') {
         navigate('/admin')
       } else {
-        navigate('/dashboard')
+        navigate('/account')
       }
       
       return { success: true }
