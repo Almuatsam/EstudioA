@@ -90,7 +90,7 @@ export const uploadAPI = {
     const formData = new FormData()
     formData.append('file', file)
     
-    const response = await apiClient.post('/upload/pattern', formData, {
+    const response = await apiClient.post('/upload/pattern-file', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -102,7 +102,7 @@ export const uploadAPI = {
     const formData = new FormData()
     formData.append('file', file)
     
-    const response = await apiClient.post('/upload/image', formData, {
+    const response = await apiClient.post('/upload/pattern-image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
