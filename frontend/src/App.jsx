@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
-
+import './index.css'
 // Pages
 import DesignerDashboardPage from './pages/DesignerDashboardPage'
 import HomePage from './pages/HomePage'

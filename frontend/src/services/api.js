@@ -206,4 +206,29 @@ export const userAPI = {
   }
 }
 
+// Designer API
+export const designerAPI = {
+  getMyPatterns: async () => {
+    const response = await apiClient.get('/patterns/my-patterns')
+    return response.data
+  },
+
+  getStats: async () => {
+    const response = await apiClient.get('/patterns/my-patterns')
+    const patterns = response.data.patterns || []
+    const stats = {
+      total_patterns: patterns.length,
+      approved_patterns: patterns.filter(p => p.is_approved).length,
+      pending_patterns: patterns.filter(p => !p.is_approved).length,
+      total_downloads: patterns.reduce((sum, p) => sum + (p.download_count || 0), 0)
+    }
+    return { stats }
+  },
+
+  deletePattern: async (patternId) => {
+    const response = await apiClient.delete(`/patterns/${patternId}`)
+    return response.data
+  }
+}
+
 export default apiClient

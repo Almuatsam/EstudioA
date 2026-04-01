@@ -1,225 +1,158 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import './FlipCard.css'
 
 function FlipCard({ pattern }) {
   const [isFlipped, setIsFlipped] = useState(false)
 
-  // For mobile: toggle on click
   const handleClick = () => {
-    // Only toggle if screen is mobile (less than 768px)
     if (window.innerWidth < 768) {
       setIsFlipped(!isFlipped)
     }
   }
 
-  // For desktop: flip on mouse enter
   const handleMouseEnter = () => {
-    setIsFlipped(true)
+    if (window.innerWidth >= 768) {
+      setIsFlipped(true)
+    }
   }
 
-  // For desktop: flip back on mouse leave
   const handleMouseLeave = () => {
-    setIsFlipped(false)
+    if (window.innerWidth >= 768) {
+      setIsFlipped(false)
+    }
+  }
+
+  const handleDownload = (e) => {
+    e.stopPropagation()
+    if (pattern.pdf_file) {
+      const link = document.createElement('a')
+      link.href = `http://127.0.0.1:5000${pattern.pdf_file}`
+      link.download = `${pattern.title}.pdf`
+      link.target = '_blank'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } else {
+      alert('PDF file not available for this pattern')
+    }
   }
 
   return (
     <div 
-      className="flip-card-container"
+      className={`flip-card-container ${isFlipped ? 'flipped' : ''}`}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{ perspective: '1000px', cursor: 'pointer' }}
     >
-      <div 
-        className="flip-card-inner"
-        style={{
-          position: 'relative',
-          width: '100%',
-          height: '400px',
-          transition: 'transform 0.6s',
-          transformStyle: 'preserve-3d',
-          transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
-        }}
-      >
-        {/* FRONT SIDE */}
-        <div
-          className="flip-card-front"
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            backfaceVisibility: 'hidden',
-            backgroundColor: '#8FA9B6',
-            borderRadius: '12px',
-            overflow: 'hidden',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-          }}
-        >
-          {/* Image */}
-          <div 
-            style={{ 
-              backgroundColor: '#D9CDB8',
-              height: '280px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
+      <div className="flip-card">
+        
+        {/* FRONT FACE */}
+        <div className="flip-card-front">
+          <div className="flip-card-image-container">
             {pattern.preview_image ? (
               <img 
                 src={`http://127.0.0.1:5000${pattern.preview_image}`}
                 alt={pattern.title}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover'
-                }}
+                className="flip-card-image"
               />
             ) : (
-              <span style={{ color: '#6E8594', fontSize: '64px' }}>
-                📐
-              </span>
+              <div className="flip-card-placeholder">
+                <span>📐</span>
+              </div>
             )}
+            <div className="flip-card-image-overlay"></div>
           </div>
 
-          {/* Title */}
-          <div style={{ padding: '16px' }}>
-            <h3 
-              style={{ 
-                color: '#1F2F3A',
-                fontSize: '18px',
-                fontWeight: 'bold',
-                marginBottom: '8px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {pattern.title}
-            </h3>
-
-            {/* Category Badge */}
-            <span
-              style={{
-                display: 'inline-block',
-                backgroundColor: '#A9BFCA',
-                color: '#1F2F3A',
-                padding: '4px 12px',
-                borderRadius: '16px',
-                fontSize: '12px',
-                fontWeight: '500'
-              }}
-            >
-              {pattern.category?.name || 'Uncategorized'}
-            </span>
+          <div className="flip-card-content">
+            <h3 className="flip-card-title">{pattern.title}</h3>
+            
+            <div className="flip-card-meta">
+              <span className="flip-card-badge flip-card-badge-category">
+                {pattern.category?.name || 'Uncategorized'}
+              </span>
+              <span className="flip-card-badge flip-card-badge-difficulty">
+                {pattern.difficulty?.name || 'Intermediate'}
+              </span>
+            </div>
+            
+            <div className="flip-card-stats">
+              <span className="flip-card-stat">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M1 8s2-4 7-4 7 4 7 4-2 4-7 4-7-4-7-4z" stroke="currentColor" strokeWidth="1.5"/>
+                  <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.5"/>
+                </svg>
+                {pattern.view_count || 0}
+              </span>
+              <span className="flip-card-stat">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2v10M4 8l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+                {pattern.download_count || 0}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* BACK SIDE */}
-        <div
-          className="flip-card-back"
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            backfaceVisibility: 'hidden',
-            backgroundColor: '#8FA9B6',
-            borderRadius: '12px',
-            transform: 'rotateY(180deg)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '24px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Decorative Icon */}
-          <div style={{ marginBottom: '24px' }}>
-            <span style={{ fontSize: '48px', color: '#5C768A' }}>
-              📐
-            </span>
-          </div>
-
-          {/* View Button */}
-          <Link
-            to={`/pattern/${pattern.id}`}
-            style={{
-              backgroundColor: '#5C768A',
-              color: 'white',
-              padding: '12px 32px',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontWeight: '600',
-              marginBottom: '12px',
-              width: '100%',
-              maxWidth: '200px',
-              textAlign: 'center',
-              transition: 'opacity 0.2s'
-            }}
-            onMouseEnter={(e) => e.target.style.opacity = '0.9'}
-            onMouseLeave={(e) => e.target.style.opacity = '1'}
-            onClick={(e) => e.stopPropagation()}
-          >
-            👁️ View Pattern
-          </Link>
-
-          {/* Download Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              console.log('Download button clicked!')
-              console.log('Pattern object:', pattern)
-              console.log('PDF file path:', pattern.pdf_file)
+        {/* BACK FACE */}
+        <div className="flip-card-back">
+          <div className="flip-card-back-content">
+            <h4 className="flip-card-back-title">Pattern Details</h4>
+            
+            <p className="flip-card-description">
+              {pattern.description || 'No description available.'}
+            </p>
+            
+            <div className="flip-card-back-meta">
+              <div className="flip-card-designer">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5"/>
+                  <path d="M2 14c0-3 2.5-5 6-5s6 2 6 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+                <span>{pattern.designer_name || 'Unknown Designer'}</span>
+              </div>
               
-              if (pattern.pdf_file) {
-                console.log('PDF path exists, attempting download...')
-                console.log('Full URL:', `http://127.0.0.1:5000${pattern.pdf_file}`)
-                
-                const link = document.createElement('a')
-                link.href = `http://127.0.0.1:5000${pattern.pdf_file}`
-                link.download = `${pattern.title}.pdf`
-                link.target = '_blank'
-                document.body.appendChild(link)
-                link.click()
-                document.body.removeChild(link)
-                console.log('Download triggered!')
-              } else {
-                console.log('No PDF file path found!')
-                alert('PDF file not available for this pattern')
-              }
-            }}
-            style={{
-              backgroundColor: '#243A4D',
-              color: 'white',
-              padding: '12px 32px',
-              borderRadius: '8px',
-              border: 'none',
-              fontWeight: '600',
-              cursor: 'pointer',
-              width: '100%',
-              maxWidth: '200px',
-              transition: 'opacity 0.2s'
-            }}
-            onMouseEnter={(e) => e.target.style.opacity = '0.9'}
-            onMouseLeave={(e) => e.target.style.opacity = '1'}
-          >
-            ⬇️ Download PDF
-          </button>
-
-          {/* Designer Name */}
-          <div 
-            style={{ 
-              marginTop: '24px',
-              color: '#6E8594',
-              fontSize: '14px'
-            }}
-          >
-            Designer: {pattern.designer_name || 'Unknown'}
+              <div className="flip-card-back-stats">
+                <span>{pattern.view_count || 0} views</span>
+                <span>•</span>
+                <span>{pattern.download_count || 0} downloads</span>
+              </div>
+            </div>
+            
+            <div className="flip-card-actions">
+              <Link 
+                to={`/pattern/${pattern.id}`}
+                className="flip-card-btn flip-card-btn-primary"
+                onClick={(e) => e.stopPropagation()}
+              >
+                View Details
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </Link>
+              
+              <button 
+                onClick={handleDownload}
+                className="flip-card-btn flip-card-btn-secondary"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2v10M4 8l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+                Download PDF
+              </button>
+            </div>
           </div>
         </div>
       </div>
+      
+      {!isFlipped && (
+        <div className="flip-card-hint">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          <span>Tap to flip</span>
+        </div>
+      )}
     </div>
   )
 }

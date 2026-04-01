@@ -1,0 +1,27 @@
+.gender-icon {
+  border-radius: 50%;
+  background: #5C768A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gender-icon-small {
+  width: 48px;
+  height: 48px;
+}
+
+.gender-icon-medium {
+  width: 80px;
+  height: 80px;
+}
+
+.gender-icon-large {
+  width: 96px;
+  height: 96px;
+}
+
+.gender-icon svg {
+  flex-shrink: 0;
+}

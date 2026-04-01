@@ -244,6 +244,7 @@ def get_my_patterns():
                 } if pattern.difficulty else None,
                 'preview_image': pattern.preview_image,
                 'is_approved': pattern.is_approved,
+                'download_count': pattern.download_count,
                 'created_at': pattern.created_at.isoformat() if pattern.created_at else None
             })
         
@@ -252,6 +253,30 @@ def get_my_patterns():
             'total': len(patterns_list)
         }), 200
         
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@patterns_bp.route('/<int:pattern_id>', methods=['DELETE'])
+@jwt_required()
+def delete_pattern(pattern_id):
+    """Soft-delete a pattern (designer can only delete their own)"""
+    try:
+        current_user_id = get_jwt_identity()
+        pattern = Pattern.query.get(pattern_id)
+
+        if not pattern:
+            return jsonify({'error': 'Pattern not found'}), 404
+
+        current_user = User.query.get(current_user_id)
+        if pattern.user_id != current_user_id and current_user.role != 'admin':
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        pattern.is_active = False
+        db.session.commit()
+
+        return jsonify({'message': 'Pattern deleted successfully'}), 200
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

@@ -1,0 +1,109 @@
+.upload-page {
+  min-height: 100vh;
+  padding: var(--space-8) var(--space-6);
+  background: var(--pattern-soft);
+}
+
+.upload-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.upload-header {
+  margin-bottom: var(--space-8);
+}
+
+.upload-section {
+  background: rgba(var(--powder-blue-rgb), 0.95);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--shadow-1);
+}
+
+.upload-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.upload-file-group {
+  margin-bottom: var(--space-6);
+}
+
+.upload-file-group:last-child {
+  margin-bottom: 0;
+}
+
+.upload-file-input {
+  width: 100%;
+  padding: var(--space-4);
+  background: var(--soft-sky);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: var(--text-body);
+  color: var(--navy-dark);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.upload-file-input:focus {
+  outline: none;
+  border-color: var(--steel-blue);
+  box-shadow: 0 0 0 4px rgba(var(--steel-blue-rgb), 0.2);
+}
+
+.upload-file-helper {
+  font-size: var(--text-caption);
+  color: var(--slate-blue);
+  margin-top: var(--space-1);
+}
+
+.upload-file-selected {
+  font-size: var(--text-body-sm);
+  color: var(--navy-dark);
+  margin-top: var(--space-2);
+  font-weight: var(--font-medium);
+}
+
+.upload-progress {
+  background: rgba(var(--powder-blue-rgb), 0.95);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--shadow-1);
+  display: flex;
+  justify-content: center;
+}
+
+.upload-actions {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.upload-submit {
+  flex: 1;
+}
+
+.upload-notice {
+  font-size: var(--text-body-sm);
+  color: var(--slate-blue);
+  text-align: center;
+}
+
+select.input {
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .upload-form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .upload-actions {
+    flex-direction: column;
+  }
+}

@@ -1,7 +1,9 @@
 import LoadingSpinner from '../components/LoadingSpinner'
+import Button from '../components/Button'
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { patternsAPI, recommendationsAPI } from '../services/api'
+import './PatternDetailPage.css'
 
 function PatternDetailPage() {
   const { id } = useParams()
@@ -15,16 +17,16 @@ function PatternDetailPage() {
   }, [id])
 
   const loadPattern = async () => {
-  try {
-    setLoading(true)
-    const data = await patternsAPI.getPattern(id)
-    setPattern(data.pattern)  
-  } catch (error) {
-    console.error('Failed to load pattern:', error)
-  } finally {
-    setLoading(false)
+    try {
+      setLoading(true)
+      const data = await patternsAPI.getPattern(id)
+      setPattern(data.pattern)
+    } catch (error) {
+      console.error('Failed to load pattern:', error)
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
   const loadRecommendations = async () => {
     try {
@@ -35,9 +37,23 @@ function PatternDetailPage() {
     }
   }
 
+  const handleDownload = () => {
+    if (pattern?.pdf_file) {
+      const link = document.createElement('a')
+      link.href = `http://127.0.0.1:5000${pattern.pdf_file}`
+      link.download = `${pattern.title}.pdf`
+      link.target = '_blank'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } else {
+      alert('PDF file not available')
+    }
+  }
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-pattern-soft">
+      <div className="pattern-detail-loading">
         <LoadingSpinner size="large" text="Loading pattern..." />
       </div>
     )
@@ -45,11 +61,12 @@ function PatternDetailPage() {
 
   if (!pattern) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p style={{ color: '#6E8594' }} className="mb-4">Pattern not found</p>
-          <Link to="/browse" style={{ color: '#5C768A' }}>
-            ← Back to Browse
+      <div className="pattern-detail-not-found">
+        <div className="pattern-detail-not-found-content">
+          <h1 className="h1 mb-4">Pattern Not Found</h1>
+          <p className="body text-secondary mb-6">The pattern you're looking for doesn't exist.</p>
+          <Link to="/browse">
+            <Button variant="primary">Back to Browse</Button>
           </Link>
         </div>
       </div>
@@ -57,235 +74,127 @@ function PatternDetailPage() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="pattern-detail-page">
+      <div className="pattern-detail-container">
         
-        <Link
-          to="/browse"
-          style={{ color: '#6E8594' }}
-          className="inline-flex items-center mb-6 hover:opacity-70 transition-opacity"
-        >
+        <Link to="/browse" className="pattern-detail-back">
           ← Back to Patterns
         </Link>
 
-        <div 
-          style={{ backgroundColor: '#8FA9B6' }}
-          className="rounded-xl overflow-hidden mb-8"
-        >
-          <div className="grid md:grid-cols-2 gap-8 p-8">
-            
-            <div>
-              <div 
-                style={{ backgroundColor: '#D9CDB8' }}
-                className="rounded-xl h-96 flex items-center justify-center overflow-hidden"
-              >
-                {pattern.preview_image ? (
-                  <img 
-                    src={`http://127.0.0.1:5000${pattern.preview_image}`}
-                    alt={pattern.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span style={{ color: '#6E8594' }} className="text-8xl">
-                    📐
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <h1 
-                style={{ color: '#1F2F3A' }}
-                className="text-4xl font-bold mb-4"
-              >
-                {pattern.title}
-              </h1>
-
-              <div className="space-y-3 mb-6">
-                <div>
-                  <span 
-                    style={{ color: '#6E8594' }}
-                    className="text-sm font-medium"
-                  >
-                    Category:
-                  </span>
-                  <span 
-                    style={{ color: '#1F2F3A' }}
-                    className="ml-2"
-                  >
-                    {pattern.category?.name || 'Uncategorized'}
-                  </span>
-                </div>
-
-                <div>
-                  <span 
-                    style={{ color: '#6E8594' }}
-                    className="text-sm font-medium"
-                  >
-                    Difficulty:
-                  </span>
-                  <span 
-                    style={{ color: '#1F2F3A' }}
-                    className="ml-2"
-                  >
-                    {pattern.difficulty?.name || 'N/A'}
-                  </span>
-                </div>
-
-                <div>
-                  <span 
-                    style={{ color: '#6E8594' }}
-                    className="text-sm font-medium"
-                  >
-                    Designer:
-                  </span>
-                  <span 
-                    style={{ color: '#1F2F3A' }}
-                    className="ml-2"
-                  >
-                    {pattern.designer_name || 'Unknown'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Tags */}
-              {pattern.tags && pattern.tags.length > 0 && (
-                <div className="mb-6">
-                  <span 
-                    style={{ color: '#6E8594' }}
-                    className="text-sm font-medium block mb-2"
-                  >
-                    Tags:
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {pattern.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        style={{ backgroundColor: '#A9BFCA', color: '#1F2F3A' }}
-                        className="px-3 py-1 rounded-full text-sm"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+        <div className="pattern-detail-content">
+          
+          {/* Image Section */}
+          <div className="pattern-detail-image-section">
+            <div className="pattern-detail-image">
+              {pattern.preview_image ? (
+                <img 
+                  src={`http://127.0.0.1:5000${pattern.preview_image}`}
+                  alt={pattern.title}
+                />
+              ) : (
+                <div className="pattern-detail-image-placeholder">
+                  <span>📐</span>
                 </div>
               )}
+            </div>
+          </div>
 
-              {/* Stats */}
-              <div className="flex gap-6 mb-6">
-                <div>
-                  <span style={{ color: '#6E8594' }} className="text-sm">
-                    {pattern.download_count || 0} Downloads
-                  </span>
-                </div>
-                <div>
-                  <span style={{ color: '#6E8594' }} className="text-sm">
-                    {pattern.view_count || 0} Views
-                  </span>
-                </div>
+          {/* Info Section */}
+          <div className="pattern-detail-info">
+            <h1 className="display-2 mb-4">{pattern.title}</h1>
+
+            <div className="pattern-detail-meta">
+              <div className="pattern-detail-meta-item">
+                <span className="pattern-detail-meta-label">Category:</span>
+                <span className="pattern-detail-meta-value">{pattern.category?.name || 'Uncategorized'}</span>
               </div>
 
-              {/* Download Button */}
-              <button
-                onClick={() => {
-                  if (pattern.pdf_file) {
-                    // Create a temporary link and trigger download
-                    const link = document.createElement('a')
-                    link.href = `http://127.0.0.1:5000${pattern.pdf_file}`
-                    link.download = `${pattern.title}.pdf`
-                    link.target = '_blank'
-                    document.body.appendChild(link)
-                    link.click()
-                    document.body.removeChild(link)
-                  } else {
-                    alert('PDF file not available')
-                  }
-                }}
-                style={{ backgroundColor: '#5C768A' }}
-                className="w-full py-4 text-white rounded-lg font-bold text-lg hover:opacity-90 transition-opacity"
-              >
-                Download PDF Pattern
-              </button>
+              <div className="pattern-detail-meta-item">
+                <span className="pattern-detail-meta-label">Difficulty:</span>
+                <span className="pattern-detail-meta-value">{pattern.difficulty?.name || 'N/A'}</span>
+              </div>
 
+              <div className="pattern-detail-meta-item">
+                <span className="pattern-detail-meta-label">Designer:</span>
+                <span className="pattern-detail-meta-value">{pattern.designer_name || 'Unknown'}</span>
+              </div>
             </div>
+
+            {/* Tags */}
+            {pattern.tags && pattern.tags.length > 0 && (
+              <div className="pattern-detail-tags">
+                <span className="pattern-detail-meta-label">Tags:</span>
+                <div className="pattern-detail-tags-list">
+                  {pattern.tags.map((tag, index) => (
+                    <span key={index} className="pattern-detail-tag">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Stats */}
+            <div className="pattern-detail-stats">
+              <span className="body-small text-secondary">
+                {pattern.download_count || 0} Downloads
+              </span>
+              <span className="body-small text-secondary">•</span>
+              <span className="body-small text-secondary">
+                {pattern.view_count || 0} Views
+              </span>
+            </div>
+
+            {/* Download Button */}
+            <Button
+              variant="primary"
+              size="large"
+              fullWidth
+              onClick={handleDownload}
+            >
+              Download PDF Pattern
+            </Button>
+
           </div>
         </div>
 
         {/* Description */}
         {pattern.description && (
-          <div 
-            style={{ backgroundColor: '#8FA9B6' }}
-            className="rounded-xl p-8 mb-8"
-          >
-            <h2 
-              style={{ color: '#1F2F3A' }}
-              className="text-2xl font-bold mb-4"
-            >
-              Description
-            </h2>
-            <p 
-              style={{ color: '#1F2F3A' }}
-              className="leading-relaxed"
-            >
-              {pattern.description}
-            </p>
+          <div className="pattern-detail-description">
+            <h2 className="h2 mb-4">Description</h2>
+            <p className="body">{pattern.description}</p>
           </div>
         )}
 
-        {/* AI Recommendations */}
+        {/* Recommendations */}
         {recommendations.length > 0 && (
-          <div>
-            <h2 
-              style={{ color: '#1F2F3A' }}
-              className="text-3xl font-bold mb-2"
-            >
-              Similar Patterns You Might Like
-            </h2>
-            <p 
-              style={{ color: '#6E8594' }}
-              className="mb-6"
-            >
-              AI-Powered Recommendations
-            </p>
+          <div className="pattern-detail-recommendations">
+            <h2 className="h2 mb-2">Similar Patterns You Might Like</h2>
+            <p className="body text-secondary mb-6">AI-Powered Recommendations</p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="pattern-detail-recommendations-grid">
               {recommendations.map((rec) => (
                 <Link
                   key={rec.id}
                   to={`/pattern/${rec.id}`}
-                  style={{ backgroundColor: '#8FA9B6' }}
-                  className="rounded-xl overflow-hidden hover:opacity-90 transition-opacity"
+                  className="pattern-detail-recommendation-card"
                 >
-                  <div 
-                    style={{ backgroundColor: '#D9CDB8' }}
-                    className="h-40 flex items-center justify-center"
-                  >
+                  <div className="pattern-detail-recommendation-image">
                     {rec.preview_image ? (
                       <img 
                         src={`http://127.0.0.1:5000${rec.preview_image}`}
                         alt={rec.title}
-                        className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span style={{ color: '#6E8594' }} className="text-4xl">
-                        📐
-                      </span>
+                      <span>📐</span>
                     )}
                   </div>
 
-                  <div className="p-4">
-                    <h3 
-                      style={{ color: '#1F2F3A' }}
-                      className="font-bold mb-2"
-                    >
-                      {rec.title}
-                    </h3>
-                    <div 
-                      style={{ color: '#6E8594' }}
-                      className="text-sm"
-                    >
+                  <div className="pattern-detail-recommendation-content">
+                    <h3 className="h4">{rec.title}</h3>
+                    <p className="body-small text-secondary">
                       {rec.difficulty?.name || 'N/A'}
-                    </div>
+                    </p>
                   </div>
                 </Link>
               ))}

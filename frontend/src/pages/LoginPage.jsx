@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import Button from '../components/Button'
+import Input from '../components/Input'
+import './LoginPage.css'
 
 function LoginPage() {
   const { login, register } = useAuth()
@@ -17,7 +20,7 @@ function LoginPage() {
     email: '',
     password: '',
     full_name: '',
-    role: 'user'  // NEW: Default to 'user'
+    role: 'user'
   })
 
   const handleLogin = async (e) => {
@@ -47,49 +50,28 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-pattern-soft">
-      <div 
-        style={{ backgroundColor: '#8FA9B6' }}
-        className="w-full max-w-md rounded-xl p-8"
-      >
+    <div className="login-page">
+      <div className="login-container">
         
-        <div className="text-center mb-8">
-          <h1 
-            style={{ color: '#1F2F3A' }}
-            className="text-3xl font-bold"
-          >
-            EstudioA
-          </h1>
-          <p 
-            style={{ color: '#6E8594' }}
-            className="text-sm mt-2"
-          >
-            AI-Powered Pattern Platform
-          </p>
+        <div className="login-header">
+          <h1 className="h1">EstudioA</h1>
+          <p className="body text-secondary">AI-Powered Pattern Platform</p>
         </div>
 
-        {/* Error Message */}
         {error && (
-          <div 
-            style={{ backgroundColor: '#f8d7da', color: '#721c24', borderColor: '#f5c6cb' }}
-            className="p-3 rounded-lg mb-4 text-sm border"
-          >
+          <div className="login-error">
             {error}
           </div>
         )}
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6">
+        <div className="login-tabs">
           <button
             onClick={() => {
               setActiveTab('login')
               setError('')
             }}
-            style={{ 
-              backgroundColor: activeTab === 'login' ? '#5C768A' : 'transparent',
-              color: activeTab === 'login' ? 'white' : '#1F2F3A'
-            }}
-            className="flex-1 py-3 rounded-lg font-medium transition-all"
+            className={`login-tab ${activeTab === 'login' ? 'login-tab-active' : ''}`}
           >
             Login
           </button>
@@ -98,11 +80,7 @@ function LoginPage() {
               setActiveTab('register')
               setError('')
             }}
-            style={{ 
-              backgroundColor: activeTab === 'register' ? '#5C768A' : 'transparent',
-              color: activeTab === 'register' ? 'white' : '#1F2F3A'
-            }}
-            className="flex-1 py-3 rounded-lg font-medium transition-all"
+            className={`login-tab ${activeTab === 'register' ? 'login-tab-active' : ''}`}
           >
             Register
           </button>
@@ -110,250 +88,151 @@ function LoginPage() {
 
         {/* LOGIN FORM */}
         {activeTab === 'login' && (
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleLogin} className="login-form">
             
-            <div className="mb-4">
-              <label 
-                style={{ color: '#1F2F3A' }}
-                className="block text-sm font-medium mb-2"
-              >
-                Username
-              </label>
-              <input
-                type="text"
-                required
-                value={loginData.username}
-                onChange={(e) => setLoginData({...loginData, username: e.target.value})}
-                style={{ backgroundColor: '#E9DDC9', color: '#1F2F3A' }}
-                className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Enter your username"
-              />
-            </div>
+            <Input
+              label="Username"
+              type="text"
+              required
+              value={loginData.username}
+              onChange={(e) => setLoginData({...loginData, username: e.target.value})}
+              placeholder="Enter your username"
+            />
 
-            <div className="mb-6">
-              <label 
-                style={{ color: '#1F2F3A' }}
-                className="block text-sm font-medium mb-2"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                required
-                value={loginData.password}
-                onChange={(e) => setLoginData({...loginData, password: e.target.value})}
-                style={{ backgroundColor: '#E9DDC9', color: '#1F2F3A' }}
-                className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Enter your password"
-              />
-            </div>
+            <Input
+              label="Password"
+              type="password"
+              required
+              value={loginData.password}
+              onChange={(e) => setLoginData({...loginData, password: e.target.value})}
+              placeholder="Enter your password"
+            />
 
-            <button
+            <Button
               type="submit"
-              disabled={loading}
-              style={{ backgroundColor: '#5C768A' }}
-              className="w-full py-3 text-white rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+              variant="primary"
+              size="large"
+              fullWidth
+              loading={loading}
             >
-              {loading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Logging in...</span>
-                </>
-              ) : (
-                'Login'
-              )}
-            </button>
+              {loading ? 'Logging in...' : 'Login'}
+            </Button>
 
           </form>
         )}
 
         {/* REGISTER FORM */}
         {activeTab === 'register' && (
-          <form onSubmit={handleRegister}>
+          <form onSubmit={handleRegister} className="login-form">
             
-            <div className="mb-4">
-              <label 
-                style={{ color: '#1F2F3A' }}
-                className="block text-sm font-medium mb-2"
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                required
-                value={registerData.full_name}
-                onChange={(e) => setRegisterData({...registerData, full_name: e.target.value})}
-                style={{ backgroundColor: '#E9DDC9', color: '#1F2F3A' }}
-                className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Enter your full name"
-              />
-            </div>
+            <Input
+              label="Full Name"
+              type="text"
+              required
+              value={registerData.full_name}
+              onChange={(e) => setRegisterData({...registerData, full_name: e.target.value})}
+              placeholder="Enter your full name"
+            />
 
-            <div className="mb-4">
-              <label 
-                style={{ color: '#1F2F3A' }}
-                className="block text-sm font-medium mb-2"
-              >
-                Username
-              </label>
-              <input
-                type="text"
-                required
-                value={registerData.username}
-                onChange={(e) => setRegisterData({...registerData, username: e.target.value})}
-                style={{ backgroundColor: '#E9DDC9', color: '#1F2F3A' }}
-                className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Choose a username"
-              />
-            </div>
+            <Input
+              label="Username"
+              type="text"
+              required
+              value={registerData.username}
+              onChange={(e) => setRegisterData({...registerData, username: e.target.value})}
+              placeholder="Choose a username"
+            />
 
-            <div className="mb-4">
-              <label 
-                style={{ color: '#1F2F3A' }}
-                className="block text-sm font-medium mb-2"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                required
-                value={registerData.email}
-                onChange={(e) => setRegisterData({...registerData, email: e.target.value})}
-                style={{ backgroundColor: '#E9DDC9', color: '#1F2F3A' }}
-                className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Enter your email"
-              />
-            </div>
+            <Input
+              label="Email"
+              type="email"
+              required
+              value={registerData.email}
+              onChange={(e) => setRegisterData({...registerData, email: e.target.value})}
+              placeholder="Enter your email"
+            />
 
-            <div className="mb-4">
-              <label 
-                style={{ color: '#1F2F3A' }}
-                className="block text-sm font-medium mb-2"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                required
-                value={registerData.password}
-                onChange={(e) => setRegisterData({...registerData, password: e.target.value})}
-                style={{ backgroundColor: '#E9DDC9', color: '#1F2F3A' }}
-                className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Create a password"
-              />
-            </div>
+            <Input
+              label="Password"
+              type="password"
+              required
+              value={registerData.password}
+              onChange={(e) => setRegisterData({...registerData, password: e.target.value})}
+              placeholder="Create a password"
+            />
 
-            {/* NEW: Role Selection */}
-            <div className="mb-6">
-              <label 
-                style={{ color: '#1F2F3A' }}
-                className="block text-sm font-medium mb-3"
-              >
-                I am a:
-              </label>
+            {/* Role Selection */}
+            <div className="login-role-selection">
+              <label className="input-label">I am a:</label>
               
-              <div className="space-y-3">
-                {/* User Radio Button */}
-                <label 
-                  className="flex items-start gap-3 p-4 rounded-lg cursor-pointer transition-all"
-                  style={{ 
-                    backgroundColor: registerData.role === 'user' ? '#D9CDB8' : '#E9DDC9',
-                    border: registerData.role === 'user' ? '2px solid #5C768A' : '2px solid transparent'
-                  }}
-                >
+              <div className="login-role-options">
+                <label className={`login-role-option ${registerData.role === 'user' ? 'login-role-option-active' : ''}`}>
                   <input
                     type="radio"
                     name="role"
                     value="user"
                     checked={registerData.role === 'user'}
                     onChange={(e) => setRegisterData({...registerData, role: e.target.value})}
-                    className="mt-1"
-                    style={{ accentColor: '#5C768A' }}
                   />
-                  <div className="flex-1">
-                    <div style={{ color: '#1F2F3A' }} className="font-bold mb-1">
-                      User
-                    </div>
-                    <div style={{ color: '#6E8594' }} className="text-sm">
-                      Browse and download patterns
-                    </div>
+                  <div className="login-role-content">
+                    <div className="login-role-title">User</div>
+                    <div className="login-role-desc">Browse and download patterns</div>
                   </div>
                 </label>
 
-                {/* Designer Radio Button */}
-                <label 
-                  className="flex items-start gap-3 p-4 rounded-lg cursor-pointer transition-all"
-                  style={{ 
-                    backgroundColor: registerData.role === 'designer' ? '#D9CDB8' : '#E9DDC9',
-                    border: registerData.role === 'designer' ? '2px solid #5C768A' : '2px solid transparent'
-                  }}
-                >
+                <label className={`login-role-option ${registerData.role === 'designer' ? 'login-role-option-active' : ''}`}>
                   <input
                     type="radio"
                     name="role"
                     value="designer"
                     checked={registerData.role === 'designer'}
                     onChange={(e) => setRegisterData({...registerData, role: e.target.value})}
-                    className="mt-1"
-                    style={{ accentColor: '#5C768A' }}
                   />
-                  <div className="flex-1">
-                    <div style={{ color: '#1F2F3A' }} className="font-bold mb-1">
-                      Designer
-                    </div>
-                    <div style={{ color: '#6E8594' }} className="text-sm">
-                      Upload and share my patterns
-                    </div>
+                  <div className="login-role-content">
+                    <div className="login-role-title">Designer</div>
+                    <div className="login-role-desc">Upload and share my patterns</div>
                   </div>
                 </label>
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
-              disabled={loading}
-              style={{ backgroundColor: '#5C768A' }}
-              className="w-full py-3 text-white rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+              variant="primary"
+              size="large"
+              fullWidth
+              loading={loading}
             >
-              {loading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Creating account...</span>
-                </>
-              ) : (
-                'Create Account'
-              )}
-            </button>
+              {loading ? 'Creating account...' : 'Create Account'}
+            </Button>
 
           </form>
         )}
 
         {/* Switch Tab Link */}
-        <div className="text-center mt-6">
+        <div className="login-footer">
           {activeTab === 'login' ? (
-            <p style={{ color: '#6E8594' }} className="text-sm">
+            <p className="body-small text-secondary">
               Don't have an account?{' '}
               <button
                 onClick={() => {
                   setActiveTab('register')
                   setError('')
                 }}
-                style={{ color: '#5C768A' }}
-                className="font-medium hover:opacity-70"
+                className="login-link"
               >
                 Register here
               </button>
             </p>
           ) : (
-            <p style={{ color: '#6E8594' }} className="text-sm">
+            <p className="body-small text-secondary">
               Already have an account?{' '}
               <button
                 onClick={() => {
                   setActiveTab('login')
                   setError('')
                 }}
-                style={{ color: '#5C768A' }}
-                className="font-medium hover:opacity-70"
+                className="login-link"
               >
                 Login here
               </button>

@@ -1,8 +1,11 @@
 import LoadingSpinner from '../components/LoadingSpinner'
 import FlipCard from '../components/FlipCard'
+import Button from '../components/Button'
+import Input from '../components/Input'
 import { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { patternsAPI } from '../services/api'
+import './BrowsePage.css'
 
 function BrowsePage() {
   const [searchParams] = useSearchParams()
@@ -79,142 +82,106 @@ function BrowsePage() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-8 bg-pattern-soft">
-      <div className="max-w-7xl mx-auto">
+    <div className="browse-page">
+      <div className="browse-container">
         
-        <div className="mb-8 flex items-center justify-between">
-          <h1 
-            style={{ color: '#1F2F3A' }}
-            className="text-4xl font-bold"
-          >
-            All Patterns
-          </h1>
-          <span 
-            style={{ color: '#6E8594' }}
-            className="text-lg"
-          >
-            {loading ? 'Loading...' : `Showing ${patterns.length} patterns`}
+        <div className="browse-header">
+          <h1 className="h1">All Patterns</h1>
+          <span className="body text-secondary">
+            {loading ? 'Loading...' : `${patterns.length} patterns`}
           </span>
         </div>
 
-        <div className="flex gap-8">
+        <div className="browse-content">
           
           {/* FILTER SIDEBAR */}
-          <aside className="w-64 flex-shrink-0">
-            <div 
-              style={{ backgroundColor: '#8FA9B6' }}
-              className="p-6 rounded-xl sticky top-4"
-            >
-              <h2 
-                style={{ color: '#1F2F3A' }}
-                className="text-xl font-bold mb-6"
-              >
-                Filters
-              </h2>
+          <aside className="browse-sidebar">
+            <div className="browse-filters">
+              <h2 className="h3 mb-6">Filters</h2>
 
               {/* Search Input */}
-              <div className="mb-6">
-                <label 
-                  style={{ color: '#1F2F3A' }}
-                  className="block text-sm font-medium mb-2"
-                >
-                  Search
-                </label>
-                <input
+              <div className="browse-filter-group">
+                <Input
+                  label="Search"
                   type="text"
                   placeholder="Pattern name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  style={{ backgroundColor: '#E9DDC9', color: '#1F2F3A' }}
-                  className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
-                <button
+                <Button
+                  variant="primary"
+                  size="small"
+                  fullWidth
                   onClick={handleSearch}
-                  style={{ backgroundColor: '#5C768A' }}
-                  className="w-full mt-2 py-2 text-white rounded-lg text-sm hover:opacity-90"
+                  className="mt-2"
                 >
                   Search
-                </button>
+                </Button>
               </div>
 
               {/* Category Filter */}
-              <div className="mb-6">
-                <label 
-                  style={{ color: '#1F2F3A' }}
-                  className="block text-sm font-medium mb-2"
-                >
-                  Category
-                </label>
-                <div className="space-y-2">
+              <div className="browse-filter-group">
+                <label className="input-label">Category</label>
+                <div className="browse-filter-options">
                   {categories.map((cat) => (
-                    <label key={cat.id} className="flex items-center cursor-pointer">
+                    <label key={cat.id} className="browse-filter-option">
                       <input
                         type="radio"
                         name="category"
                         value={cat.id}
                         checked={selectedCategory == cat.id}
                         onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="mr-2"
                       />
-                      <span style={{ color: '#1F2F3A' }} className="text-sm">
-                        {cat.name}
-                      </span>
+                      <span>{cat.name}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
               {/* Difficulty Filter */}
-              <div className="mb-6">
-                <label 
-                  style={{ color: '#1F2F3A' }}
-                  className="block text-sm font-medium mb-2"
-                >
-                  Difficulty
-                </label>
-                <div className="space-y-2">
+              <div className="browse-filter-group">
+                <label className="input-label">Difficulty</label>
+                <div className="browse-filter-options">
                   {difficulties.map((diff) => (
-                    <label key={diff.id} className="flex items-center cursor-pointer">
+                    <label key={diff.id} className="browse-filter-option">
                       <input
                         type="radio"
                         name="difficulty"
                         value={diff.id}
                         checked={selectedDifficulty == diff.id}
                         onChange={(e) => setSelectedDifficulty(e.target.value)}
-                        className="mr-2"
                       />
-                      <span style={{ color: '#1F2F3A' }} className="text-sm">
-                        {diff.name}
-                      </span>
+                      <span>{diff.name}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <button
+              <Button
+                variant="secondary"
+                size="small"
+                fullWidth
                 onClick={handleClearFilters}
-                style={{ backgroundColor: '#5C768A' }}
-                className="w-full py-2 text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
               >
                 Clear All Filters
-              </button>
+              </Button>
 
             </div>
           </aside>
 
           {/* PATTERN GRID */}
-          <main className="flex-1">
+          <main className="browse-main">
             {loading ? (
-              <div className="py-20">
+              <div className="browse-loading">
                 <LoadingSpinner size="large" text="Loading patterns..." />
               </div>
             ) : patterns.length === 0 ? (
-              <div className="text-center py-12">
-                <p style={{ color: '#6E8594' }}>No patterns found. Try adjusting your filters.</p>
+              <div className="browse-empty">
+                <p className="body text-secondary">No patterns found. Try adjusting your filters.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="browse-grid">
                 {patterns.map((pattern) => (
                   <FlipCard key={pattern.id} pattern={pattern} />
                 ))}

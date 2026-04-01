@@ -1,42 +1,162 @@
+@import './styles/estudioa-design-system.css';
+@import './components/Button.css';
+@import './components/Input.css';
+@import './components/PatternCard.css';
+@import './components/Navbar.css';
+@import './components/FlipCard.css';
+@import './components/ConfirmationModal.css';
+@import './components/PasswordChangeModal.css';
+@import './components/Toast.css';
+@import './components/Footer.css';
+@import './components/LoadingSpinner.css';
+@import './components/GenderIcon.css';
+
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--pattern-soft); /* Use design system variable */
+  color: var(--navy-dark);
+  font-family: var(--font-family); /* Outfit from design system */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  min-height: 100vh;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Background utility - updated to new color */
+.bg-pattern-soft {
+  background: var(--pattern-soft);
 }
 
-@keyframes logo-spin {
+
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms var(--ease-out-expo),
+              transform 500ms var(--ease-out-expo);
+}
+
+.page-exit {
+  opacity: 1;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 300ms var(--ease-out-expo);
+}
+
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Remove default link styles */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--steel-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================
+   Animation Keyframes
+   ========================================== */
+
+@keyframes fade-in {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.card {
-  padding: 2em;
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.read-the-docs {
-  color: #888;
+/* Apply animations to elements */
+.animate-fade-in {
+  animation: fade-in 400ms var(--ease-out-expo);
+}
+
+.animate-slide-up {
+  animation: slide-up 500ms var(--ease-out-expo);
+}
+
+.animate-scale-in {
+  animation: scale-in 300ms var(--ease-spring);
+}
+
+/* ==========================================
+   Scrollbar Styling 
+   ========================================== */
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--pattern-soft);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--powder-blue);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--steel-blue);
+}
+
+/* ==========================================
+   Print Styles
+   ========================================== */
+
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+  }
 }

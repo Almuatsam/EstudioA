@@ -1,0 +1,210 @@
+.pattern-detail-page {
+  min-height: 100vh;
+  padding: var(--space-8) var(--space-6);
+  background: var(--pattern-soft);
+}
+
+.pattern-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pattern-detail-loading,
+.pattern-detail-not-found {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pattern-soft);
+}
+
+.pattern-detail-not-found-content {
+  text-align: center;
+}
+
+.pattern-detail-back {
+  display: inline-flex;
+  align-items: center;
+  color: var(--slate-blue);
+  text-decoration: none;
+  margin-bottom: var(--space-6);
+  font-family: var(--font-family);
+  font-weight: var(--font-medium);
+  transition: color var(--transition-fast);
+}
+
+.pattern-detail-back:hover {
+  color: var(--navy-dark);
+}
+
+.pattern-detail-content {
+  background: rgba(var(--powder-blue-rgb), 0.95);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: var(--space-8);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-1);
+}
+
+.pattern-detail-image-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pattern-detail-image {
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 3/4;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--soft-sky);
+}
+
+.pattern-detail-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pattern-detail-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 120px;
+  color: var(--slate-blue);
+}
+
+.pattern-detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.pattern-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pattern-detail-meta-item {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.pattern-detail-meta-label {
+  font-family: var(--font-family);
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-medium);
+  color: var(--slate-blue);
+}
+
+.pattern-detail-meta-value {
+  font-family: var(--font-family);
+  font-size: var(--text-body-sm);
+  color: var(--navy-dark);
+}
+
+.pattern-detail-tags {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pattern-detail-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pattern-detail-tag {
+  padding: var(--space-2) var(--space-3);
+  background: rgba(var(--steel-blue-rgb), 0.2);
+  color: var(--navy-dark);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-body-sm);
+  font-family: var(--font-family);
+}
+
+.pattern-detail-stats {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.pattern-detail-description {
+  background: rgba(var(--powder-blue-rgb), 0.95);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
+  box-shadow: var(--shadow-1);
+}
+
+.pattern-detail-recommendations {
+  margin-top: var(--space-12);
+}
+
+.pattern-detail-recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.pattern-detail-recommendation-card {
+  background: rgba(var(--powder-blue-rgb), 0.95);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  text-decoration: none;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-1);
+}
+
+.pattern-detail-recommendation-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-2);
+}
+
+.pattern-detail-recommendation-image {
+  width: 100%;
+  height: 200px;
+  background: var(--soft-sky);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pattern-detail-recommendation-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pattern-detail-recommendation-image span {
+  font-size: 48px;
+  color: var(--slate-blue);
+}
+
+.pattern-detail-recommendation-content {
+  padding: var(--space-4);
+}
+
+@media (max-width: 1024px) {
+  .pattern-detail-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .pattern-detail-recommendations-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .pattern-detail-recommendations-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,219 @@
+.designer-page {
+  min-height: 100vh;
+  padding: var(--space-8) var(--space-6);
+  background: var(--pattern-soft);
+}
+
+.designer-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pattern-soft);
+}
+
+.designer-header {
+  max-width: 1400px;
+  margin: 0 auto var(--space-10);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.designer-stats-section {
+  max-width: 1400px;
+  margin: 0 auto var(--space-12);
+}
+
+.designer-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.designer-stat-card {
+  background: rgba(var(--powder-blue-rgb), 0.95);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-1);
+  transition: all var(--transition-base);
+}
+
+.designer-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-2);
+}
+
+.designer-stat-icon {
+  font-size: 48px;
+}
+
+.designer-stat-content {
+  flex: 1;
+}
+
+.designer-stat-value {
+  font-family: var(--font-family);
+  font-size: var(--text-display-2);
+  font-weight: var(--font-bold);
+  color: var(--navy-dark);
+  line-height: 1;
+}
+
+.designer-stat-label {
+  font-size: var(--text-body-sm);
+  color: var(--slate-blue);
+  margin-top: var(--space-2);
+}
+
+.designer-section {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.designer-empty {
+  background: rgba(var(--powder-blue-rgb), 0.95);
+  border-radius: var(--radius-xl);
+  padding: var(--space-16);
+  text-align: center;
+  box-shadow: var(--shadow-1);
+}
+
+.designer-empty-icon {
+  font-size: 96px;
+  margin-bottom: var(--space-4);
+}
+
+.designer-table-container {
+  background: rgba(var(--powder-blue-rgb), 0.95);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-1);
+  overflow-x: auto;
+}
+
+.designer-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.designer-table thead {
+  border-bottom: 2px solid var(--steel-blue);
+}
+
+.designer-table th {
+  padding: var(--space-4);
+  text-align: left;
+  font-family: var(--font-family);
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-bold);
+  color: var(--navy-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.designer-table td {
+  padding: var(--space-4);
+  font-family: var(--font-family);
+  font-size: var(--text-body);
+  color: var(--navy-dark);
+  border-bottom: 1px solid rgba(var(--steel-blue-rgb), 0.2);
+}
+
+.designer-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.designer-table-pattern {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.designer-table-pattern-image {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-md);
+  background: var(--soft-sky);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.designer-table-pattern-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.designer-table-pattern-image span {
+  font-size: 24px;
+}
+
+.designer-table-pattern-title {
+  font-weight: var(--font-medium);
+}
+
+.designer-table-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.designer-status-badge {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-caption);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.designer-status-approved {
+  background: #28a745;
+  color: white;
+}
+
+.designer-status-pending {
+  background: #ffc107;
+  color: var(--navy-dark);
+}
+
+.designer-status-rejected {
+  background: #dc3545;
+  color: white;
+}
+
+@media (max-width: 1024px) {
+  .designer-header {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  
+  .designer-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .designer-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .designer-table-container {
+    padding: var(--space-4);
+  }
+  
+  .designer-table {
+    font-size: var(--text-body-sm);
+  }
+  
+  .designer-table th,
+  .designer-table td {
+    padding: var(--space-2);
+  }
+}
