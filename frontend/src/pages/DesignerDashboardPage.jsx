@@ -5,6 +5,7 @@ import { designerAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import Button from '../components/Button'
 import Toast from '../components/Toast'
+import { PatternPlaceholder, BadgeCheck, Clock, Download } from '../components/Icons'
 import './DesignerDashboardPage.css'
 
 function DesignerDashboardPage() {
@@ -104,7 +105,7 @@ function DesignerDashboardPage() {
         <div className="designer-stats-grid">
           
           <div className="designer-stat-card">
-            <div className="designer-stat-icon">📐</div>
+            <div className="designer-stat-icon"><PatternPlaceholder width={28} height={28} /></div>
             <div className="designer-stat-content">
               <div className="designer-stat-value">{stats?.total_patterns || 0}</div>
               <div className="designer-stat-label">Total Patterns</div>
@@ -112,7 +113,7 @@ function DesignerDashboardPage() {
           </div>
 
           <div className="designer-stat-card">
-            <div className="designer-stat-icon">✅</div>
+            <div className="designer-stat-icon"><BadgeCheck width={28} height={28} /></div>
             <div className="designer-stat-content">
               <div className="designer-stat-value">{stats?.approved_patterns || 0}</div>
               <div className="designer-stat-label">Approved</div>
@@ -120,7 +121,7 @@ function DesignerDashboardPage() {
           </div>
 
           <div className="designer-stat-card">
-            <div className="designer-stat-icon">⏳</div>
+            <div className="designer-stat-icon"><Clock width={28} height={28} /></div>
             <div className="designer-stat-content">
               <div className="designer-stat-value">{stats?.pending_patterns || 0}</div>
               <div className="designer-stat-label">Pending</div>
@@ -128,7 +129,7 @@ function DesignerDashboardPage() {
           </div>
 
           <div className="designer-stat-card">
-            <div className="designer-stat-icon">📥</div>
+            <div className="designer-stat-icon"><Download width={28} height={28} /></div>
             <div className="designer-stat-content">
               <div className="designer-stat-value">{stats?.total_downloads || 0}</div>
               <div className="designer-stat-label">Downloads</div>
@@ -144,7 +145,7 @@ function DesignerDashboardPage() {
 
         {patterns.length === 0 ? (
           <div className="designer-empty">
-            <div className="designer-empty-icon">📐</div>
+            <div className="designer-empty-icon"><PatternPlaceholder width={56} height={56} /></div>
             <h3 className="h2 mb-4">No Patterns Yet</h3>
             <p className="body text-secondary mb-6">Upload your first pattern to get started!</p>
             <Link to="/upload">
@@ -179,7 +180,7 @@ function DesignerDashboardPage() {
                               alt={pattern.title}
                             />
                           ) : (
-                            <span>📐</span>
+                            <PatternPlaceholder width={32} height={32} />
                           )}
                         </div>
                         <span className="designer-table-pattern-title">{pattern.title}</span>

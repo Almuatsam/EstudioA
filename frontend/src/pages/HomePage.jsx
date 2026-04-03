@@ -1,12 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import { Dress, Shirt, Pants, Coat, Bag, Moon, Running, Baby } from '../components/Icons'
 import './HomePage.css'
 
 function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const canUpload = user?.role === 'designer' || user?.role === 'admin'
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -56,11 +60,13 @@ function HomePage() {
                 Browse All Patterns
               </Button>
             </Link>
-            <Link to="/upload">
-              <Button variant="secondary" size="large" fullWidth>
-                Upload Your Pattern
-              </Button>
-            </Link>
+            {canUpload && (
+              <Link to="/upload">
+                <Button variant="secondary" size="large" fullWidth>
+                  Upload Your Pattern
+                </Button>
+              </Link>
+            )}
           </div>
 
         </div>
@@ -77,22 +83,22 @@ function HomePage() {
 
           <div className="home-categories-grid">
             {[
-              { name: 'Dresses', id: 1, icon: '👗' },
-              { name: 'Tops & Blouses', id: 2, icon: '👚' },
-              { name: 'Bottoms', id: 3, icon: '👖' },
-              { name: 'Outerwear', id: 4, icon: '🧥' },
-              { name: 'Accessories', id: 5, icon: '👜' },
-              { name: 'Sleepwear', id: 6, icon: '🛏️' },
-              { name: 'Activewear', id: 7, icon: '🏃' },
-              { name: 'Childrenswear', id: 8, icon: '👶' },
-            ].map((category) => (
+              { name: 'Dresses',        id: 1, Icon: Dress   },
+              { name: 'Tops & Blouses', id: 2, Icon: Shirt   },
+              { name: 'Bottoms',        id: 3, Icon: Pants   },
+              { name: 'Outerwear',      id: 4, Icon: Coat    },
+              { name: 'Accessories',    id: 5, Icon: Bag     },
+              { name: 'Sleepwear',      id: 6, Icon: Moon    },
+              { name: 'Activewear',     id: 7, Icon: Running },
+              { name: 'Childrenswear', id: 8, Icon: Baby    },
+            ].map(({ name, id, Icon }) => (
               <Link
-                key={category.id}
-                to={`/browse?category=${category.id}`}
+                key={id}
+                to={`/browse?category=${id}`}
                 className="home-category-card"
               >
-                <span className="home-category-icon">{category.icon}</span>
-                <span className="home-category-name">{category.name}</span>
+                <span className="home-category-icon"><Icon width={32} height={32} /></span>
+                <span className="home-category-name">{name}</span>
               </Link>
             ))}
           </div>

@@ -119,22 +119,27 @@ export const adminAPI = {
   },
 
   getPendingPatterns: async () => {
-    const response = await apiClient.get('/admin/pending-patterns')
+    const response = await apiClient.get('/admin/patterns/pending')
     return response.data
   },
 
   approvePattern: async (patternId) => {
-    const response = await apiClient.post(`/admin/approve-pattern/${patternId}`)
+    const response = await apiClient.post(`/admin/patterns/${patternId}/approve`)
     return response.data
   },
 
   rejectPattern: async (patternId) => {
-    const response = await apiClient.post(`/admin/reject-pattern/${patternId}`)
+    const response = await apiClient.post(`/admin/patterns/${patternId}/reject`)
     return response.data
   },
 
   getUsers: async () => {
     const response = await apiClient.get('/admin/users')
+    return response.data
+  },
+
+  deleteUser: async (userId) => {
+    const response = await apiClient.delete(`/admin/users/${userId}`)
     return response.data
   }
 }

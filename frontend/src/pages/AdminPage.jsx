@@ -5,6 +5,7 @@ import { adminAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import Button from '../components/Button'
 import Toast from '../components/Toast'
+import { PatternPlaceholder, Users, Clock, Download } from '../components/Icons'
 import './AdminPage.css'
 
 function AdminPage() {
@@ -111,7 +112,7 @@ function AdminPage() {
         <div className="admin-stats-grid">
           
           <div className="admin-stat-card">
-            <div className="admin-stat-icon">👥</div>
+            <div className="admin-stat-icon"><Users width={28} height={28} /></div>
             <div className="admin-stat-content">
               <div className="admin-stat-value">{stats?.total_users || 0}</div>
               <div className="admin-stat-label">Total Users</div>
@@ -119,7 +120,7 @@ function AdminPage() {
           </div>
 
           <div className="admin-stat-card">
-            <div className="admin-stat-icon">📐</div>
+            <div className="admin-stat-icon"><PatternPlaceholder width={28} height={28} /></div>
             <div className="admin-stat-content">
               <div className="admin-stat-value">{stats?.total_patterns || 0}</div>
               <div className="admin-stat-label">Total Patterns</div>
@@ -127,7 +128,7 @@ function AdminPage() {
           </div>
 
           <div className="admin-stat-card">
-            <div className="admin-stat-icon">⏳</div>
+            <div className="admin-stat-icon"><Clock width={28} height={28} /></div>
             <div className="admin-stat-content">
               <div className="admin-stat-value">{stats?.pending_patterns || 0}</div>
               <div className="admin-stat-label">Pending Approval</div>
@@ -135,7 +136,7 @@ function AdminPage() {
           </div>
 
           <div className="admin-stat-card">
-            <div className="admin-stat-icon">📥</div>
+            <div className="admin-stat-icon"><Download width={28} height={28} /></div>
             <div className="admin-stat-content">
               <div className="admin-stat-value">{stats?.total_downloads || 0}</div>
               <div className="admin-stat-label">Total Downloads</div>
@@ -177,7 +178,7 @@ function AdminPage() {
                               alt={pattern.title}
                             />
                           ) : (
-                            <span>📐</span>
+                            <PatternPlaceholder width={32} height={32} />
                           )}
                         </div>
                         <span className="admin-table-pattern-title">{pattern.title}</span>

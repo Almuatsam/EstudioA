@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { PatternPlaceholder } from './Icons'
 import './FlipCard.css'
 
 function FlipCard({ pattern }) {
@@ -58,7 +59,7 @@ function FlipCard({ pattern }) {
               />
             ) : (
               <div className="flip-card-placeholder">
-                <span>📐</span>
+                <PatternPlaceholder width={48} height={48} />
               </div>
             )}
             <div className="flip-card-image-overlay"></div>

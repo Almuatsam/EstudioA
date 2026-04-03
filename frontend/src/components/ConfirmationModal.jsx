@@ -1,3 +1,4 @@
+import { Warning } from './Icons'
 import './ConfirmationModal.css'
 
 function ConfirmationModal({ 
@@ -15,7 +16,7 @@ function ConfirmationModal({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-icon">⚠️</div>
+        <div className="modal-icon"><Warning width={32} height={32} /></div>
         
         <h3 className="modal-title">{title}</h3>
         <p className="modal-message">{message}</p>

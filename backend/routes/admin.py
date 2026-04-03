@@ -274,6 +274,32 @@ def update_user_role(user_id):
         return jsonify({'error': str(e)}), 500
 
 
+@admin_bp.route('/users/<int:user_id>', methods=['DELETE'])
+@jwt_required()
+def delete_user(user_id):
+    """Soft-delete a user (admin only)"""
+    user, error_response, status_code = admin_required()
+    if error_response:
+        return jsonify(error_response), status_code
+
+    try:
+        target_user = User.query.get(user_id)
+        if not target_user:
+            return jsonify({'error': 'User not found'}), 404
+
+        if target_user.role == 'admin':
+            return jsonify({'error': 'Cannot delete admin accounts'}), 403
+
+        target_user.is_active = False
+        db.session.commit()
+
+        return jsonify({'message': 'User deleted successfully'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
 @admin_bp.route('/stats', methods=['GET'])
 @jwt_required()
 def get_stats():

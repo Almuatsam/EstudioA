@@ -3,6 +3,7 @@ import Button from '../components/Button'
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { patternsAPI, recommendationsAPI } from '../services/api'
+import { PatternPlaceholder } from '../components/Icons'
 import './PatternDetailPage.css'
 
 function PatternDetailPage() {
@@ -93,7 +94,7 @@ function PatternDetailPage() {
                 />
               ) : (
                 <div className="pattern-detail-image-placeholder">
-                  <span>📐</span>
+                  <PatternPlaceholder width={48} height={48} />
                 </div>
               )}
             </div>
@@ -186,7 +187,7 @@ function PatternDetailPage() {
                         alt={rec.title}
                       />
                     ) : (
-                      <span>📐</span>
+                      <PatternPlaceholder width={48} height={48} />
                     )}
                   </div>
 

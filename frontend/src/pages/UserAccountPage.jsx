@@ -9,6 +9,7 @@ import Toast from '../components/Toast'
 import LoadingSpinner from '../components/LoadingSpinner'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import { PatternPlaceholder, Download, Heart } from '../components/Icons'
 import './UserAccountPage.css'
 
 function UserAccountPage() {
@@ -291,7 +292,7 @@ function UserAccountPage() {
               </div>
             ) : downloads.length === 0 ? (
               <div className="account-empty">
-                <div className="account-empty-icon">📥</div>
+                <div className="account-empty-icon"><Download width={48} height={48} /></div>
                 <h3 className="h2 mb-4">No Downloads Yet</h3>
                 <p className="body text-secondary mb-6">Start exploring patterns!</p>
                 <Link to="/browse">
@@ -311,7 +312,7 @@ function UserAccountPage() {
                           alt={pattern.title}
                         />
                       ) : (
-                        <span>📐</span>
+                        <PatternPlaceholder width={40} height={40} />
                       )}
                     </div>
 
@@ -358,7 +359,7 @@ function UserAccountPage() {
               </div>
             ) : favorites.length === 0 ? (
               <div className="account-empty">
-                <div className="account-empty-icon">❤️</div>
+                <div className="account-empty-icon"><Heart width={48} height={48} /></div>
                 <h3 className="h2 mb-4">No Favorites Yet</h3>
                 <p className="body text-secondary mb-6">Save patterns you love!</p>
                 <Link to="/browse">
@@ -378,7 +379,7 @@ function UserAccountPage() {
                           alt={pattern.title}
                         />
                       ) : (
-                        <span>📐</span>
+                        <PatternPlaceholder width={40} height={40} />
                       )}
                     </div>
 
