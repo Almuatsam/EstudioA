@@ -1,6 +1,9 @@
 import os
 from datetime import timedelta
 from urllib.parse import quote_plus
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Config:
     """Base configuration class"""
