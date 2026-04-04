@@ -1,12 +1,13 @@
-# EstudioA - AI-Driven Fashion Pattern Platform
+# EstudioA — AI-Powered Sewing Pattern Platform
 
-![Project Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+![Project Status](https://img.shields.io/badge/Status-Active-brightgreen)
 ![Python](https://img.shields.io/badge/Python-3.12.8-blue)
 ![Flask](https://img.shields.io/badge/Flask-3.1.0-green)
+![React](https://img.shields.io/badge/React-19-61DAFB)
 
-## 📋 Project Overview
+## Project Overview
 
-EstudioA is a modern web-based platform for sewing patterns that leverages artificial intelligence to enhance pattern discovery and management. The platform provides intelligent search, personalized recommendations, and a community-driven upload system with administrative moderation.
+EstudioA is a full-stack web platform for sewing patterns with AI-powered search and discovery. Designers upload patterns, users browse and download them, and an admin workflow ensures quality control. The platform features intelligent search, personalized recommendations, favorites, and Google OAuth sign-in.
 
 **Academic Project**
 - **Student:** Almuatasim Adib Alfarsi
@@ -14,187 +15,276 @@ EstudioA is a modern web-based platform for sewing patterns that leverages artif
 - **Institution:** Middle East College
 - **Supervisor:** Dhanalakshmi Venugopal
 - **Course:** Bachelor Graduation Project in Computer Science
-- **Year:** Fall 2025 \ Spring 2026
+- **Year:** Fall 2025 / Spring 2026
 
-## 🎯 Key Features
+---
 
-- **AI-Powered Fuzzy Search**: Tolerant search using NLP and RapidFuzz
-- **Smart Recommendations**: Content-based pattern suggestions
-- **User Authentication**: Secure JWT-based authentication
-- **Pattern Management**: Upload, browse, and download sewing patterns
-- **Admin Moderation**: Review and approve user-submitted patterns
-- **Category System**: 8 pattern categories (Dresses, Tops, Bottoms, etc.)
-- **Difficulty Levels**: 5 skill levels (Beginner to Expert)
+## Features
 
-## 🛠️ Technology Stack
+### Users
+- Register / login with username+password or Google OAuth
+- Browse and search patterns (fuzzy + semantic AI search)
+- Filter by category and difficulty level
+- Save patterns to Favorites
+- Download pattern PDFs
+- Personal account dashboard with download history
+
+### Designers
+- Upload sewing patterns (PDF + cover image)
+- Auto-suggest tags from title and description
+- Track views, downloads, and favorites per pattern
+- Dashboard showing approval status for each upload
+
+### Admin
+- Approve or reject submitted patterns
+- Manage user roles and accounts
+- View platform-wide statistics (patterns, users, downloads, favorites)
+
+### Platform
+- Email notifications (admin on new upload, designer on approve/reject, users on new publish)
+- Role-based routing (user → account, designer → dashboard, admin → admin panel)
+- Responsive design with flip card pattern browsing
+
+---
+
+## Technology Stack
 
 ### Backend
-- **Framework:** Flask 3.1.0
-- **Database:** MySQL 9.5.0
-- **ORM:** SQLAlchemy 2.0.35
-- **Authentication:** JWT (flask-jwt-extended)
-- **AI/ML:** spaCy 3.8.2, RapidFuzz 3.10.1
-- **Language:** Python 3.12.8
+| | |
+|---|---|
+| Framework | Flask 3.1.0 |
+| Database | MySQL with SQLAlchemy 2.x |
+| Authentication | JWT (flask-jwt-extended) + bcrypt |
+| AI Search | spaCy 3.8.2 + RapidFuzz 3.10.1 |
+| OAuth | Google OAuth 2.0 (authorization code flow) |
+| Language | Python 3.12.8 |
 
-### Frontend (Planned)
-- **Framework:** React.js
-- **Styling:** Tailwind CSS
-- **Build Tool:** Vite
+### Frontend
+| | |
+|---|---|
+| Framework | React 19 |
+| Router | React Router v7 |
+| HTTP Client | Axios |
+| Build Tool | Vite |
+| Styling | Custom CSS design system |
 
-## 📁 Project Structure
+---
+
+## Project Structure
+
 ```
 EstudioA/
-├── backend/                 # Flask backend
-│   ├── models/             # Database models
-│   │   ├── user.py        # User model
-│   │   ├── pattern.py     # Pattern, Category, DifficultyLevel
-│   │   ├── upload.py      # Upload tracking
-│   │   └── history.py     # User history
-│   ├── routes/            # API endpoints (in development)
-│   ├── services/          # Business logic (in development)
-│   ├── utils/             # Helper functions (in development)
-│   ├── app.py            # Main application
-│   ├── config.py         # Configuration
-│   ├── seed.py           # Database seeding script
-│   └── requirements.txt  # Python dependencies
-├── frontend/             # React frontend (planned)
-└── database/            # SQL scripts
+├── backend/
+│   ├── models/
+│   │   ├── user.py             # User accounts, roles, Google OAuth
+│   │   ├── pattern.py          # Patterns, categories, difficulty levels
+│   │   ├── favorites.py        # User favorites
+│   │   ├── upload.py           # Upload submission tracking
+│   │   └── history.py          # Download/view history
+│   ├── routes/
+│   │   ├── auth.py             # Register, login, Google OAuth, profile
+│   │   ├── patterns.py         # Browse, search, details, view tracking
+│   │   ├── upload.py           # File upload (PDF + image)
+│   │   ├── admin.py            # Approve/reject, user management, stats
+│   │   ├── user.py             # Profile get/update
+│   │   ├── favorites.py        # Add/remove/check favorites
+│   │   ├── downloads.py        # Download tracking and history
+│   │   └── recommendations.py  # Personal and pattern-based suggestions
+│   ├── services/
+│   │   ├── search_service.py   # Fuzzy + semantic search
+│   │   ├── tag_service.py      # Auto-tag generation
+│   │   └── email_service.py    # SMTP notifications
+│   ├── app.py                  # Application factory
+│   ├── config.py               # Configuration (reads from .env)
+│   ├── seed.py                 # Database seeder
+│   ├── .env.example            # Environment variable template
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx       # Global auth state
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx / Footer.jsx
+│   │   │   ├── FlipCard.jsx          # Pattern card with favorites
+│   │   │   ├── Button.jsx / Input.jsx
+│   │   │   ├── Toast.jsx             # Self-dismissing notifications
+│   │   │   ├── LoadingSpinner.jsx
+│   │   │   ├── ConfirmationModal.jsx
+│   │   │   └── Icons.jsx
+│   │   ├── pages/
+│   │   │   ├── HomePage.jsx
+│   │   │   ├── BrowsePage.jsx
+│   │   │   ├── LoginPage.jsx         # Login, register, Google OAuth
+│   │   │   ├── AuthCallbackPage.jsx  # Google OAuth callback handler
+│   │   │   ├── PatternDetailPage.jsx
+│   │   │   ├── UploadPatternPage.jsx # Upload with auto-tag suggestions
+│   │   │   ├── UserAccountPage.jsx
+│   │   │   ├── DesignerDashboardPage.jsx
+│   │   │   └── AdminPage.jsx
+│   │   ├── services/
+│   │   │   └── api.js                # Axios instance + all API namespaces
+│   │   └── App.jsx
+│   ├── .env.example                  # Frontend environment template
+│   └── index.html
+└── README.md
 ```
 
-## 🚀 Current Status
+---
 
-### Completed ✅
-- [x] Backend architecture design
-- [x] Database schema implementation (6 tables)
-- [x] Database models with relationships
-- [x] Database seeding (8 categories, 5 difficulty levels)
-- [x] Flask application setup with CORS
-- [x] Configuration system with environment variables
-- [x] MySQL database connection
-- [x] **Authentication System**
-  - [x] User registration with validation
-  - [x] User login with JWT tokens
-  - [x] Token refresh mechanism
-  - [x] Password hashing with bcrypt
-  - [x] Protected routes
-- [x] **Pattern Management**
-  - [x] List patterns with pagination
-  - [x] Filter by category and difficulty
-  - [x] Pattern details with view tracking
-  - [x] Search functionality
-- [x] **File Upload System**
-  - [x] PDF file uploads
-  - [x] Image uploads with thumbnails
-  - [x] File validation and security
-  - [x] Organized file storage
-- [x] **Admin System**
-  - [x] Pattern approval workflow
-  - [x] User management
-  - [x] Role assignment
-  - [x] Platform statistics
-- [x] **AI-Powered Search**
-  - [x] Fuzzy search with RapidFuzz
-  - [x] Semantic search with spaCy
-  - [x] Combined search algorithm
-  - [x] Search result ranking
-
-### In Development 🚧
-- [ ] Advanced recommendation engine
-- [ ] Frontend React application
-- [ ] User dashboard
-
-## 💾 Database Schema
-
-The system uses 6 main tables:
-- **users**: User accounts and authentication
-- **categories**: Pattern categories (8 default categories)
-- **difficulty_levels**: Skill level ratings (5 levels)
-- **patterns**: Sewing pattern metadata and files
-- **uploads**: Pattern submission tracking
-- **history**: User interaction history
-
-## 🔧 Setup Instructions
+## Setup
 
 ### Prerequisites
-- Python 3.12.8
-- MySQL 9.5.0
-- Node.js 25.2.1 (for frontend)
-- Git 2.50.1
+- Python 3.12+
+- MySQL 8+
+- Node.js 18+
+- spaCy model: `python -m spacy download en_core_web_sm`
 
-### Backend Setup
+### Backend
 
-1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/EstudioA.git
-cd EstudioA/backend
-```
+cd backend
 
-2. Create virtual environment:
-```bash
+# Create and activate virtual environment
 python -m venv venv
-venv\Scripts\activate  # Windows
-```
+venv\Scripts\activate        # Windows
+# source venv/bin/activate   # macOS/Linux
 
-3. Install dependencies:
-```bash
+# Install dependencies
 pip install -r requirements.txt
-pip install cryptography
-```
 
-4. Configure database:
-- Update `config.py` with your MySQL credentials
-- Create database: `CREATE DATABASE estudioa;`
+# Configure environment
+cp .env.example .env
+# Edit .env with your values (DB password, Google OAuth keys, etc.)
 
-5. Seed the database:
-```bash
+# Create MySQL database
+# mysql> CREATE DATABASE estudioa;
+
+# Seed reference data (run once)
 python seed.py
-```
 
-6. Run the application:
-```bash
+# Start dev server
 python app.py
+# → http://127.0.0.1:5000
 ```
 
-The backend will be available at `http://127.0.0.1:5000`
+### Frontend
 
-## 📝 API Documentation (Planned)
+```bash
+cd frontend
 
-### Authentication Endpoints
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
+# Configure environment
+cp .env.example .env
+# Set VITE_GOOGLE_CLIENT_ID if using Google OAuth
 
-### Pattern Endpoints
-- `GET /api/patterns` - Browse all patterns
-- `GET /api/patterns/:id` - Get pattern details
-- `GET /api/patterns/search` - Search patterns
-- `POST /api/patterns/download/:id` - Download pattern
+npm install
+npm run dev
+# → http://localhost:5173
+```
 
-### Upload Endpoints
-- `POST /api/uploads` - Submit new pattern
-- `GET /api/uploads/my` - Get user's uploads
+### Environment Variables
 
-### Admin Endpoints
-- `GET /api/admin/uploads/pending` - Review pending uploads
-- `POST /api/admin/uploads/:id/approve` - Approve pattern
-- `POST /api/admin/uploads/:id/reject` - Reject pattern
+**`backend/.env`**
+```
+DB_PASSWORD=your_mysql_password
+SECRET_KEY=your-flask-secret
+JWT_SECRET_KEY=your-jwt-secret
 
-## 🎓 Academic Context
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-google-client-secret
 
-This project serves as a practical demonstration of:
-- Full-stack web application development
-- Database design and implementation
-- RESTful API architecture
-- AI/ML integration in web applications
-- User authentication and authorization
-- Agile development methodology
-- Version control with Git
+# Optional — email notifications
+MAIL_USERNAME=your@gmail.com
+MAIL_PASSWORD=your-app-password
+ADMIN_EMAIL=admin@yourdomain.com
+```
 
-## 📄 License
+**`frontend/.env`**
+```
+VITE_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+```
 
-This project is submitted as academic coursework at Middle East College.
+> For Google OAuth, add `http://localhost:5173/auth/callback` as an Authorized Redirect URI in Google Cloud Console.
 
-## 👤 Author
+---
+
+## API Reference
+
+### Auth — `/api/auth`
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/register` | Register new user |
+| POST | `/login` | Login with username + password |
+| POST | `/google` | Google OAuth (exchange code for JWT) |
+| GET | `/profile` | Get current user profile |
+| POST | `/refresh` | Refresh access token |
+| POST | `/change-password` | Change password |
+
+### Patterns — `/api/patterns`
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Browse all approved patterns |
+| GET | `/<id>` | Pattern details |
+| POST | `/` | Create pattern (designer) |
+| GET | `/my-patterns` | Designer's own patterns |
+| POST | `/<id>/view` | Track a pattern view |
+| POST | `/suggest-tags` | Auto-suggest tags |
+
+### Upload — `/api/upload`
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/pattern-file` | Upload PDF file |
+| POST | `/image` | Upload cover image |
+
+### Favorites — `/api/favorites`
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Get user's favorites |
+| POST | `/` | Add to favorites |
+| DELETE | `/<pattern_id>` | Remove from favorites |
+| GET | `/check/<pattern_id>` | Check if favorited |
+
+### Admin — `/api/admin`
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/patterns/pending` | List pending patterns |
+| POST | `/patterns/<id>/approve` | Approve pattern |
+| POST | `/patterns/<id>/reject` | Reject pattern |
+| GET | `/users` | List all users |
+| PUT | `/users/<id>/role` | Change user role |
+| GET | `/stats` | Platform statistics |
+
+---
+
+## Database Schema
+
+| Table | Purpose |
+|-------|---------|
+| `users` | Accounts, roles (`user`/`designer`/`admin`), Google OAuth |
+| `patterns` | Pattern metadata, files, approval status |
+| `categories` | 8 pattern categories (Dresses, Tops, etc.) |
+| `difficulty_levels` | 5 skill levels (Beginner → Expert) |
+| `favorites` | User ↔ pattern favorites |
+| `uploads` | Submission tracking (designer → pattern) |
+| `download_history` | Per-user download records |
+| `history` | View and interaction history |
+
+---
+
+## Academic Context
+
+This project demonstrates:
+- Full-stack web application development (Flask + React)
+- RESTful API design and implementation
+- Relational database design with SQLAlchemy ORM
+- JWT authentication and role-based access control
+- Third-party OAuth integration (Google)
+- AI/ML integration (NLP search, tag generation)
+- Email notification systems
+- Secure secret management with environment variables
+
+---
+
+## Author
 
 **Almuatasim Adib Alfarsi**
 - Email: Almuatsamalfarsi@gmail.com
@@ -202,4 +292,4 @@ This project is submitted as academic coursework at Middle East College.
 
 ---
 
-**Last Updated:** January 22, 2026
+*Last updated: April 2026*
