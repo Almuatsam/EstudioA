@@ -10,6 +10,7 @@ import PatternDetailPage from './pages/PatternDetailPage'
 import AdminPage from './pages/AdminPage'
 import UploadPatternPage from './pages/UploadPatternPage'
 import UserAccountPage from './pages/UserAccountPage'
+import AuthCallbackPage from './pages/AuthCallbackPage'
 
 // Components
 import Navbar from './components/Navbar'
@@ -30,6 +31,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/upload" element={<UploadPatternPage />} />
           <Route path="/designer-dashboard" element={<DesignerDashboardPage />} />
+          <Route path="/auth/callback" element={<AuthCallbackPage />} />
         </Routes>
 
         <Footer />

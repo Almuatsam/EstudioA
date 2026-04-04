@@ -43,6 +43,11 @@ export const authAPI = {
 
   logout: () => {
     localStorage.removeItem('token')
+  },
+
+  googleLogin: async ({ code, redirect_uri }) => {
+    const response = await apiClient.post('/auth/google', { code, redirect_uri })
+    return response.data
   }
 }
 
@@ -80,6 +85,18 @@ export const patternsAPI = {
 
   getMyPatterns: async () => {
     const response = await apiClient.get('/patterns/my-patterns')
+    return response.data
+  },
+
+  trackView: async (id) => {
+    const response = await apiClient.post(`/patterns/${id}/view`)
+    return response.data
+  },
+
+  suggestTags: async ({ title, description, category_name, difficulty_name }) => {
+    const response = await apiClient.post('/patterns/suggest-tags', {
+      title, description, category_name, difficulty_name
+    })
     return response.data
   }
 }
@@ -225,7 +242,9 @@ export const designerAPI = {
       total_patterns: patterns.length,
       approved_patterns: patterns.filter(p => p.is_approved).length,
       pending_patterns: patterns.filter(p => !p.is_approved).length,
-      total_downloads: patterns.reduce((sum, p) => sum + (p.download_count || 0), 0)
+      total_downloads: patterns.reduce((sum, p) => sum + (p.download_count || 0), 0),
+      total_views: patterns.reduce((sum, p) => sum + (p.view_count || 0), 0),
+      total_favorites: patterns.reduce((sum, p) => sum + (p.favorite_count || 0), 0)
     }
     return { stats }
   },

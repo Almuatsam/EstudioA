@@ -5,7 +5,7 @@ import { designerAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import Button from '../components/Button'
 import Toast from '../components/Toast'
-import { PatternPlaceholder, BadgeCheck, Clock, Download } from '../components/Icons'
+import { PatternPlaceholder, BadgeCheck, Clock, Download, Heart } from '../components/Icons'
 import './DesignerDashboardPage.css'
 
 function DesignerDashboardPage() {
@@ -136,6 +136,14 @@ function DesignerDashboardPage() {
             </div>
           </div>
 
+          <div className="designer-stat-card">
+            <div className="designer-stat-icon"><Heart width={28} height={28} /></div>
+            <div className="designer-stat-content">
+              <div className="designer-stat-value">{stats?.total_favorites || 0}</div>
+              <div className="designer-stat-label">Favorites</div>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -164,6 +172,7 @@ function DesignerDashboardPage() {
                   <th>Status</th>
                   <th>Downloads</th>
                   <th>Views</th>
+                  <th>Favorites</th>
                   <th>Uploaded</th>
                   <th>Actions</th>
                 </tr>
@@ -194,6 +203,7 @@ function DesignerDashboardPage() {
                     </td>
                     <td>{pattern.download_count || 0}</td>
                     <td>{pattern.view_count || 0}</td>
+                    <td>{pattern.favorite_count || 0}</td>
                     <td>{new Date(pattern.created_at).toLocaleDateString()}</td>
                     <td>
                       <div className="designer-table-actions">

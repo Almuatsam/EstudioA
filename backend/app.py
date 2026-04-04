@@ -5,6 +5,9 @@ from flask_bcrypt import Bcrypt
 from config import config
 from models import db
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Initialize extensions
 jwt = JWTManager()

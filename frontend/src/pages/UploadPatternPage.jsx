@@ -1,7 +1,7 @@
 import LoadingSpinner from '../components/LoadingSpinner'
 import Button from '../components/Button'
 import Input from '../components/Input'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { patternsAPI, uploadAPI } from '../services/api'
@@ -10,21 +10,26 @@ import './UploadPatternPage.css'
 function UploadPatternPage() {
   const { user, isAuthenticated } = useAuth()
   const navigate = useNavigate()
-  
+
   const [categories, setCategories] = useState([])
   const [difficulties, setDifficulties] = useState([])
   const [loading, setLoading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
-  
+
+  // Tag state
+  const [tags, setTags] = useState([])
+  const [tagInput, setTagInput] = useState('')
+  const [suggestingTags, setSuggestingTags] = useState(false)
+  const tagInputRef = useRef(null)
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     category_id: '',
     difficulty_id: '',
     designer_name: user?.full_name || '',
-    tags: ''
   })
-  
+
   const [files, setFiles] = useState({
     pdfFile: null,
     imageFile: null
@@ -58,10 +63,50 @@ function UploadPatternPage() {
   }
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  // ---- Tag helpers ----
+  const addTag = (tag) => {
+    const clean = tag.trim().toLowerCase()
+    if (clean && !tags.includes(clean)) {
+      setTags([...tags, clean])
+    }
+  }
+
+  const removeTag = (tag) => {
+    setTags(tags.filter(t => t !== tag))
+  }
+
+  const handleTagKeyDown = (e) => {
+    if ((e.key === 'Enter' || e.key === ',') && tagInput.trim()) {
+      e.preventDefault()
+      addTag(tagInput)
+      setTagInput('')
+    } else if (e.key === 'Backspace' && !tagInput && tags.length > 0) {
+      removeTag(tags[tags.length - 1])
+    }
+  }
+
+  const handleSuggestTags = async () => {
+    const categoryName = categories.find(c => c.id === parseInt(formData.category_id))?.name || ''
+    const difficultyName = difficulties.find(d => d.id === parseInt(formData.difficulty_id))?.name || ''
+
+    setSuggestingTags(true)
+    try {
+      const data = await patternsAPI.suggestTags({
+        title: formData.title,
+        description: formData.description,
+        category_name: categoryName,
+        difficulty_name: difficultyName,
+      })
+      const newTags = (data.tags || []).filter(t => !tags.includes(t))
+      setTags([...tags, ...newTags])
+    } catch (error) {
+      console.error('Tag suggestion failed:', error)
+    } finally {
+      setSuggestingTags(false)
+    }
   }
 
   const handleFileChange = (e) => {
@@ -105,7 +150,7 @@ function UploadPatternPage() {
         designer_name: formData.designer_name,
         pdf_file: pdfResponse.file.file_path,
         preview_image: imageResponse.file.file_path,
-        tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : []
+        tags
       }
       
       await patternsAPI.createPattern(patternData)
@@ -212,15 +257,46 @@ function UploadPatternPage() {
               </div>
             </div>
 
-            <Input
-              label="Tags (comma-separated)"
-              type="text"
-              name="tags"
-              value={formData.tags}
-              onChange={handleInputChange}
-              placeholder="e.g., summer, casual, cotton, beginner-friendly"
-              helperText="Separate tags with commas"
-            />
+            {/* Tag editor */}
+            <div className="input-container">
+              <div className="upload-tags-header">
+                <label className="input-label">Tags</label>
+                <button
+                  type="button"
+                  className="upload-tags-suggest-btn"
+                  onClick={handleSuggestTags}
+                  disabled={suggestingTags || (!formData.title && !formData.description)}
+                >
+                  {suggestingTags ? 'Suggesting…' : '✦ Auto-suggest'}
+                </button>
+              </div>
+
+              <div
+                className="upload-tags-box"
+                onClick={() => tagInputRef.current?.focus()}
+              >
+                {tags.map(tag => (
+                  <span key={tag} className="upload-tag-chip">
+                    {tag}
+                    <button
+                      type="button"
+                      className="upload-tag-chip-remove"
+                      onClick={() => removeTag(tag)}
+                      aria-label={`Remove ${tag}`}
+                    >×</button>
+                  </span>
+                ))}
+                <input
+                  ref={tagInputRef}
+                  className="upload-tags-input"
+                  value={tagInput}
+                  onChange={e => setTagInput(e.target.value)}
+                  onKeyDown={handleTagKeyDown}
+                  placeholder={tags.length === 0 ? 'Type a tag and press Enter or comma' : ''}
+                />
+              </div>
+              <p className="upload-file-helper">Press Enter or comma to add. Backspace to remove last.</p>
+            </div>
 
           </div>
 

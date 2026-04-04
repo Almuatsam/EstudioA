@@ -1,9 +1,11 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from models.user import User
 from models import db
 from app import bcrypt
 from datetime import datetime
+import requests as http_requests
+import re
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -164,6 +166,114 @@ def get_profile():
     
         
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@auth_bp.route('/google', methods=['POST'])
+def google_login():
+    """
+    Exchange a Google OAuth authorization code for user info and return a JWT.
+    Accepts: { code, redirect_uri }
+    """
+    try:
+        data = request.get_json()
+        code         = data.get('code')
+        redirect_uri = data.get('redirect_uri')
+
+        if not code:
+            return jsonify({'error': 'code is required'}), 400
+
+        client_id     = current_app.config.get('GOOGLE_CLIENT_ID', '')
+        client_secret = current_app.config.get('GOOGLE_CLIENT_SECRET', '')
+
+        # Exchange code for tokens
+        token_resp = http_requests.post(
+            'https://oauth2.googleapis.com/token',
+            data={
+                'code': code,
+                'client_id': client_id,
+                'client_secret': client_secret,
+                'redirect_uri': redirect_uri,
+                'grant_type': 'authorization_code',
+            },
+            timeout=10
+        )
+        token_data = token_resp.json()
+        if 'error' in token_data:
+            return jsonify({'error': token_data.get('error_description', 'Token exchange failed')}), 401
+
+        # Get user info using the access token
+        access_token = token_data.get('access_token')
+        info_resp = http_requests.get(
+            'https://www.googleapis.com/oauth2/v2/userinfo',
+            headers={'Authorization': f'Bearer {access_token}'},
+            timeout=10
+        )
+        info = info_resp.json()
+
+        google_id = info.get('id')
+        email     = info.get('email', '')
+        full_name = info.get('name', '')
+
+        if not google_id or not email:
+            return jsonify({'error': 'Incomplete Google profile'}), 400
+
+        # Find existing user by google_id or email
+        user = User.query.filter_by(google_id=google_id).first()
+        if not user:
+            user = User.query.filter_by(email=email).first()
+            if user:
+                # Link Google ID to existing account
+                user.google_id = google_id
+                db.session.commit()
+
+        if not user:
+            # Create new account
+            base_username = re.sub(r'[^a-z0-9]', '', email.split('@')[0].lower()) or 'user'
+            username = base_username
+            suffix = 1
+            while User.query.filter_by(username=username).first():
+                username = f"{base_username}{suffix}"
+                suffix += 1
+
+            user = User(
+                username=username,
+                email=email,
+                full_name=full_name,
+                google_id=google_id,
+                password_hash=None,
+                role='user',
+                is_active=True,
+                is_verified=True,
+                created_at=datetime.utcnow()
+            )
+            db.session.add(user)
+            db.session.commit()
+
+        # Update last login
+        user.last_login = datetime.utcnow()
+        db.session.commit()
+
+        access_token  = create_access_token(identity=str(user.id))
+        refresh_token = create_refresh_token(identity=str(user.id))
+
+        return jsonify({
+            'message': 'Google login successful',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'full_name': user.full_name,
+                'gender': user.gender,
+                'role': user.role
+            },
+            'token': access_token,
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
 

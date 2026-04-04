@@ -1,12 +1,15 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.pattern import Pattern, Category, DifficultyLevel
 from models.user import User
+from models.favorite import Favorite
 from models import db
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
 from services.search_service import search_patterns
+from services.tag_service import generate_tags_enhanced
+from services.email_service import notify_admin_new_pattern
 
 
 patterns_bp = Blueprint('patterns', __name__)
@@ -97,17 +100,27 @@ def get_all_patterns():
         return jsonify({'error': str(e)}), 500
 
 
+@patterns_bp.route('/<int:pattern_id>/view', methods=['POST'])
+def track_view(pattern_id):
+    """Increment view count for a pattern (called once by frontend)"""
+    try:
+        pattern = Pattern.query.get(pattern_id)
+        if not pattern:
+            return jsonify({'error': 'Pattern not found'}), 404
+        pattern.increment_views()
+        return jsonify({'view_count': pattern.view_count}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @patterns_bp.route('/<int:pattern_id>', methods=['GET'])
 def get_pattern(pattern_id):
     """Get a specific pattern by ID"""
     try:
         pattern = Pattern.query.get(pattern_id)
-        
+
         if not pattern:
             return jsonify({'error': 'Pattern not found'}), 404
-        
-        # Increment view count
-        pattern.increment_views()
         
         return jsonify({
             'pattern': {
@@ -196,7 +209,12 @@ def create_pattern():
         # Save to database
         db.session.add(new_pattern)
         db.session.commit()
-        
+
+        # Email: notify admin about new pending pattern
+        admin_email = current_app.config.get('ADMIN_EMAIL', '')
+        if admin_email:
+            notify_admin_new_pattern(admin_email, new_pattern.title, new_pattern.designer_name or user.username)
+
         return jsonify({
             'message': 'Pattern created successfully and pending approval',
             'pattern': {
@@ -230,6 +248,7 @@ def get_my_patterns():
         
         patterns_list = []
         for pattern in patterns:
+            favorite_count = Favorite.query.filter_by(pattern_id=pattern.id).count()
             patterns_list.append({
                 'id': pattern.id,
                 'title': pattern.title,
@@ -244,7 +263,10 @@ def get_my_patterns():
                 } if pattern.difficulty else None,
                 'preview_image': pattern.preview_image,
                 'is_approved': pattern.is_approved,
+                'status': 'approved' if pattern.is_approved else 'pending',
                 'download_count': pattern.download_count,
+                'view_count': pattern.view_count,
+                'favorite_count': favorite_count,
                 'created_at': pattern.created_at.isoformat() if pattern.created_at else None
             })
         
@@ -277,6 +299,22 @@ def delete_pattern(pattern_id):
 
         return jsonify({'message': 'Pattern deleted successfully'}), 200
 
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@patterns_bp.route('/suggest-tags', methods=['POST'])
+def suggest_tags():
+    """Generate auto-tags from title, description, category, difficulty"""
+    try:
+        data = request.get_json()
+        tags = generate_tags_enhanced(
+            title=data.get('title', ''),
+            description=data.get('description', ''),
+            category_name=data.get('category_name', ''),
+            difficulty_name=data.get('difficulty_name', ''),
+        )
+        return jsonify({'tags': tags}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

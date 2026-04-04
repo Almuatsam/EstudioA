@@ -1,10 +1,42 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { PatternPlaceholder } from './Icons'
+import { useAuth } from '../context/AuthContext'
+import { favoritesAPI } from '../services/api'
+import { PatternPlaceholder, Heart, HeartSolid } from './Icons'
 import './FlipCard.css'
 
 function FlipCard({ pattern }) {
+  const { isAuthenticated } = useAuth()
   const [isFlipped, setIsFlipped] = useState(false)
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [favoriteLoading, setFavoriteLoading] = useState(false)
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      favoritesAPI.checkFavorite(pattern.id)
+        .then(data => setIsFavorited(data.is_favorited))
+        .catch(() => {})
+    }
+  }, [pattern.id, isAuthenticated])
+
+  const handleFavoriteToggle = async (e) => {
+    e.stopPropagation()
+    if (!isAuthenticated || favoriteLoading) return
+    setFavoriteLoading(true)
+    try {
+      if (isFavorited) {
+        await favoritesAPI.removeFavorite(pattern.id)
+        setIsFavorited(false)
+      } else {
+        await favoritesAPI.addFavorite(pattern.id)
+        setIsFavorited(true)
+      }
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error)
+    } finally {
+      setFavoriteLoading(false)
+    }
+  }
 
   const handleClick = () => {
     if (window.innerWidth < 768) {
@@ -52,7 +84,7 @@ function FlipCard({ pattern }) {
         <div className="flip-card-front">
           <div className="flip-card-image-container">
             {pattern.preview_image ? (
-              <img 
+              <img
                 src={`http://127.0.0.1:5000${pattern.preview_image}`}
                 alt={pattern.title}
                 className="flip-card-image"
@@ -121,7 +153,7 @@ function FlipCard({ pattern }) {
             </div>
             
             <div className="flip-card-actions">
-              <Link 
+              <Link
                 to={`/pattern/${pattern.id}`}
                 className="flip-card-btn flip-card-btn-primary"
                 onClick={(e) => e.stopPropagation()}
@@ -131,8 +163,8 @@ function FlipCard({ pattern }) {
                   <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </Link>
-              
-              <button 
+
+              <button
                 onClick={handleDownload}
                 className="flip-card-btn flip-card-btn-secondary"
               >
@@ -141,6 +173,21 @@ function FlipCard({ pattern }) {
                 </svg>
                 Download PDF
               </button>
+
+              {isAuthenticated && (
+                <button
+                  className={`flip-card-btn flip-card-btn-favorite ${isFavorited ? 'favorited' : ''}`}
+                  onClick={handleFavoriteToggle}
+                  disabled={favoriteLoading}
+                  aria-label={isFavorited ? 'Remove from favorites' : 'Save to favorites'}
+                >
+                  {isFavorited
+                    ? <HeartSolid width={16} height={16} />
+                    : <Heart width={16} height={16} />
+                  }
+                  {isFavorited ? 'Saved' : 'Save to Favorites'}
+                </button>
+              )}
             </div>
           </div>
         </div>

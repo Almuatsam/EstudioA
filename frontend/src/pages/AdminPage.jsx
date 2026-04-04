@@ -5,7 +5,7 @@ import { adminAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import Button from '../components/Button'
 import Toast from '../components/Toast'
-import { PatternPlaceholder, Users, Clock, Download } from '../components/Icons'
+import { PatternPlaceholder, Users, Clock, Download, Heart } from '../components/Icons'
 import './AdminPage.css'
 
 function AdminPage() {
@@ -140,6 +140,14 @@ function AdminPage() {
             <div className="admin-stat-content">
               <div className="admin-stat-value">{stats?.total_downloads || 0}</div>
               <div className="admin-stat-label">Total Downloads</div>
+            </div>
+          </div>
+
+          <div className="admin-stat-card">
+            <div className="admin-stat-icon"><Heart width={28} height={28} /></div>
+            <div className="admin-stat-content">
+              <div className="admin-stat-value">{stats?.total_favorites || 0}</div>
+              <div className="admin-stat-label">Total Favorites</div>
             </div>
           </div>
 

@@ -98,6 +98,99 @@ select.input {
   cursor: pointer;
 }
 
+/* ---- Tag chip editor ---- */
+.upload-tags-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.upload-tags-suggest-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-family);
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-medium);
+  color: var(--slate-blue);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.upload-tags-suggest-btn:hover:not(:disabled) {
+  background: rgba(var(--steel-blue-rgb), 0.12);
+  color: var(--navy-dark);
+}
+
+.upload-tags-suggest-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.upload-tags-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--soft-sky);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: text;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.upload-tags-box:focus-within {
+  border-color: var(--steel-blue);
+  box-shadow: 0 0 0 4px rgba(var(--steel-blue-rgb), 0.2);
+}
+
+.upload-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--slate-blue);
+  color: #f5f1e8;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-body-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-medium);
+  white-space: nowrap;
+}
+
+.upload-tag-chip-remove {
+  background: none;
+  border: none;
+  color: rgba(245, 241, 232, 0.75);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-fast);
+}
+
+.upload-tag-chip-remove:hover {
+  color: #fff;
+}
+
+.upload-tags-input {
+  flex: 1;
+  min-width: 140px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-family);
+  font-size: var(--text-body);
+  color: var(--navy-dark);
+  outline: none;
+  padding: 2px 0;
+}
+
 @media (max-width: 640px) {
   .upload-form-grid {
     grid-template-columns: 1fr;

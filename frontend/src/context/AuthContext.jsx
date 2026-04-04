@@ -83,6 +83,31 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const googleLogin = async ({ code, redirect_uri }) => {
+    try {
+      const data = await authAPI.googleLogin({ code, redirect_uri })
+      localStorage.setItem('token', data.token)
+      setUser(data.user)
+      setIsAuthenticated(true)
+      setIsAdmin(data.user.role === 'admin')
+
+      if (data.user.role === 'designer') {
+        navigate('/designer-dashboard')
+      } else if (data.user.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/account')
+      }
+
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Google login failed'
+      }
+    }
+  }
+
   const logout = () => {
     localStorage.removeItem('token')
     setUser(null)
@@ -100,6 +125,7 @@ export function AuthProvider({ children }) {
       loading,
       login,
       register,
+      googleLogin,
       logout
     }}>
       {children}

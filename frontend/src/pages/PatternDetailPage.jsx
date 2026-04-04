@@ -2,20 +2,57 @@ import LoadingSpinner from '../components/LoadingSpinner'
 import Button from '../components/Button'
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { patternsAPI, recommendationsAPI } from '../services/api'
-import { PatternPlaceholder } from '../components/Icons'
+import { useAuth } from '../context/AuthContext'
+import { patternsAPI, recommendationsAPI, favoritesAPI } from '../services/api'
+import { PatternPlaceholder, Heart, HeartSolid } from '../components/Icons'
 import './PatternDetailPage.css'
+
+// Module-level set persists across StrictMode remounts, preventing double view counts
+const viewedPatterns = new Set()
 
 function PatternDetailPage() {
   const { id } = useParams()
+  const { isAuthenticated } = useAuth()
   const [pattern, setPattern] = useState(null)
   const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [favoriteLoading, setFavoriteLoading] = useState(false)
 
   useEffect(() => {
     loadPattern()
     loadRecommendations()
+    if (!viewedPatterns.has(id)) {
+      viewedPatterns.add(id)
+      patternsAPI.trackView(id).catch(() => {})
+    }
   }, [id])
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      favoritesAPI.checkFavorite(id)
+        .then(data => setIsFavorited(data.is_favorited))
+        .catch(() => {})
+    }
+  }, [id, isAuthenticated])
+
+  const handleFavoriteToggle = async () => {
+    if (!isAuthenticated || favoriteLoading) return
+    setFavoriteLoading(true)
+    try {
+      if (isFavorited) {
+        await favoritesAPI.removeFavorite(id)
+        setIsFavorited(false)
+      } else {
+        await favoritesAPI.addFavorite(id)
+        setIsFavorited(true)
+      }
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error)
+    } finally {
+      setFavoriteLoading(false)
+    }
+  }
 
   const loadPattern = async () => {
     try {
@@ -146,15 +183,32 @@ function PatternDetailPage() {
               </span>
             </div>
 
-            {/* Download Button */}
-            <Button
-              variant="primary"
-              size="large"
-              fullWidth
-              onClick={handleDownload}
-            >
-              Download PDF Pattern
-            </Button>
+            {/* Actions */}
+            <div className="pattern-detail-actions">
+              <Button
+                variant="primary"
+                size="large"
+                fullWidth
+                onClick={handleDownload}
+              >
+                Download PDF Pattern
+              </Button>
+
+              {isAuthenticated && (
+                <button
+                  className={`pattern-detail-favorite-btn ${isFavorited ? 'favorited' : ''}`}
+                  onClick={handleFavoriteToggle}
+                  disabled={favoriteLoading}
+                  aria-label={isFavorited ? 'Remove from favorites' : 'Save to favorites'}
+                >
+                  {isFavorited
+                    ? <HeartSolid width={22} height={22} />
+                    : <Heart width={22} height={22} />
+                  }
+                  <span>{isFavorited ? 'Saved' : 'Save to Favorites'}</span>
+                </button>
+              )}
+            </div>
 
           </div>
         </div>

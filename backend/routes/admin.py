@@ -1,9 +1,11 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.pattern import Pattern, Category, DifficultyLevel
 from models.user import User
+from models.favorite import Favorite
 from models import db
 from datetime import datetime
+from services.email_service import notify_designer_approved, notify_designer_rejected, notify_users_new_pattern
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -88,7 +90,19 @@ def approve_pattern(pattern_id):
         pattern.is_approved = True
         pattern.approved_at = datetime.utcnow()
         db.session.commit()
-        
+
+        # Email: notify designer
+        designer = User.query.get(pattern.user_id) if pattern.user_id else None
+        if designer and designer.email:
+            notify_designer_approved(designer.email, designer.full_name or designer.username, pattern.title)
+
+        # Email: notify all regular users about the new published pattern
+        user_emails = [
+            u.email for u in User.query.filter_by(role='user', is_active=True).all()
+            if u.email
+        ]
+        notify_users_new_pattern(user_emails, pattern.title, pattern.designer_name or '', pattern.id)
+
         return jsonify({
             'message': 'Pattern approved successfully',
             'pattern': {
@@ -121,7 +135,12 @@ def reject_pattern(pattern_id):
         # Deactivate the pattern
         pattern.is_active = False
         db.session.commit()
-        
+
+        # Email: notify designer
+        designer = User.query.get(pattern.user_id) if pattern.user_id else None
+        if designer and designer.email:
+            notify_designer_rejected(designer.email, designer.full_name or designer.username, pattern.title)
+
         return jsonify({
             'message': 'Pattern rejected successfully',
             'pattern': {
@@ -315,10 +334,11 @@ def get_stats():
         approved_patterns = Pattern.query.filter_by(is_approved=True).count()
         pending_patterns = Pattern.query.filter_by(is_approved=False, is_active=True).count()
         
-        # Total downloads and views
+        # Total downloads, views, and favorites
         total_downloads = db.session.query(db.func.sum(Pattern.download_count)).scalar() or 0
         total_views = db.session.query(db.func.sum(Pattern.view_count)).scalar() or 0
-        
+        total_favorites = Favorite.query.count()
+
         return jsonify({
             'stats': {
                 'total_users': total_users,
@@ -326,7 +346,8 @@ def get_stats():
                 'approved_patterns': approved_patterns,
                 'pending_patterns': pending_patterns,
                 'total_downloads': total_downloads,
-                'total_views': total_views
+                'total_views': total_views,
+                'total_favorites': total_favorites
             }
         }), 200
         
