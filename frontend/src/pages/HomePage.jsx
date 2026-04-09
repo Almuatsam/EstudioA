@@ -1,16 +1,26 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import { Dress, Shirt, Pants, Coat, Bag, Moon, Running, Baby } from '../components/Icons'
+import { patternsAPI } from '../services/api'
 import './HomePage.css'
+
+const IMAGE_BASE = 'http://127.0.0.1:5000'
 
 function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
+  const [trending, setTrending] = useState([])
   const navigate = useNavigate()
   const { user } = useAuth()
   const canUpload = user?.role === 'designer' || user?.role === 'admin'
+
+  useEffect(() => {
+    patternsAPI.getPatterns({ sort_by: 'views', per_page: 4 })
+      .then(data => setTrending(data.patterns || []))
+      .catch(() => {})
+  }, [])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -115,26 +125,40 @@ function HomePage() {
           </p>
 
           <div className="home-trending-grid">
-            {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="home-trending-card">
+            {trending.map((pattern) => (
+              <Link key={pattern.id} to={`/pattern/${pattern.id}`} className="home-trending-card">
                 <div className="home-trending-image">
-                  <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 3h18v18H3z"/>
-                    <path d="M9 9h6v6H9z"/>
-                  </svg>
+                  {pattern.preview_image ? (
+                    <img
+                      src={IMAGE_BASE + pattern.preview_image}
+                      alt={pattern.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 3h18v18H3z"/>
+                      <path d="M9 9h6v6H9z"/>
+                    </svg>
+                  )}
                 </div>
-                
+
                 <div className="home-trending-content">
-                  <h3 className="h4">Pattern Title {item}</h3>
+                  <h3 className="h4">{pattern.title}</h3>
                   <div className="home-trending-meta">
-                    <span>Easy</span>
+                    <span>{pattern.difficulty?.name || 'All levels'}</span>
                     <span className="home-trending-downloads">
-                      {120 - item * 10} downloads
+                      {pattern.view_count} views
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
+
+            {trending.length === 0 && (
+              <p className="body text-secondary" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
+                No patterns yet — be the first to upload!
+              </p>
+            )}
           </div>
 
           <div className="text-center mt-12">

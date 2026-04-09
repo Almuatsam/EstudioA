@@ -57,8 +57,14 @@ def get_all_patterns():
                 )
             )
         
-        # Order by most recent
-        query = query.order_by(Pattern.created_at.desc())
+        # Order by sort_by param (default: most recent)
+        sort_by = request.args.get('sort_by', 'newest')
+        if sort_by == 'views':
+            query = query.order_by(Pattern.view_count.desc())
+        elif sort_by == 'downloads':
+            query = query.order_by(Pattern.download_count.desc())
+        else:
+            query = query.order_by(Pattern.created_at.desc())
         
         # Paginate results
         paginated_patterns = query.paginate(page=page, per_page=per_page, error_out=False)

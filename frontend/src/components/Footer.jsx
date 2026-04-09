@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
+import logoOutline from '../assets/logo-outline.svg'
 import './Footer.css'
 
 function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">
-        <div className="footer-logo">EstudioA</div>
+        <img src={logoOutline} alt="EstudioA" className="footer-logo" />
         <p className="footer-copyright">© 2026 EstudioA. All rights reserved.</p>
         
         <div className="footer-links">

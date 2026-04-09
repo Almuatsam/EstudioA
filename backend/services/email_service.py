@@ -72,7 +72,7 @@ def send_email(to: str | list, subject: str, html_body: str) -> bool:
         smtp.login(username, password)
         smtp.sendmail(username, recipients, msg.as_string())
         smtp.quit()
-        print(f"[Email] Sent '{subject}' → {recipients}")
+        print(f"[Email] Sent '{subject}' -> {recipients}")
         return True
     except Exception as e:
         print(f"[Email] Failed to send '{subject}': {e}")

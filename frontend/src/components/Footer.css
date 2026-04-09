@@ -15,10 +15,9 @@
 }
 
 .footer-logo {
-  font-family: 'Outfit', sans-serif;
-  font-size: 24px;
-  font-weight: 800;
-  color: #A9BFCA;
+  height: 44px;
+  width: auto;
+  border-radius: 6px;
 }
 
 .footer-copyright {

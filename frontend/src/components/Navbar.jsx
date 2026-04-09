@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../context/AuthContext'
+import logoFilled from '../assets/logo-filled.svg'
 import './Navbar.css'
 
 function Navbar() {
@@ -50,9 +51,7 @@ function Navbar() {
 
         {/* Logo */}
         <Link to="/" className="navbar-logo">
-          <svg className="navbar-logo-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 3h18v18H3z" /><path d="M3 9h18M9 3v18" />
-          </svg>
+          <img src={logoFilled} alt="EstudioA" className="navbar-logo-img" />
           <span className="navbar-logo-text">EstudioA</span>
         </Link>
 

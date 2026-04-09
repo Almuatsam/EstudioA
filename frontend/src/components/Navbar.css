@@ -45,9 +45,10 @@
   opacity: 0.75;
 }
 
-.navbar-logo-icon {
-  color: var(--steel-blue);
-  flex-shrink: 0;
+.navbar-logo-img {
+  height: 36px;
+  width: auto;
+  display: block;
 }
 
 .navbar-logo-text {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import logoOutline from '../assets/logo-outline.svg'
 import './LoginPage.css'
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
@@ -74,7 +75,7 @@ function LoginPage() {
       <div className="login-container">
         
         <div className="login-header">
-          <h1 className="h1">EstudioA</h1>
+          <img src={logoOutline} alt="EstudioA" className="login-logo" />
           <p className="body text-secondary">AI-Powered Pattern Platform</p>
         </div>
 
