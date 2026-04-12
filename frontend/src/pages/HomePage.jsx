@@ -1,13 +1,36 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import BlurText from '../components/BlurText'
 import { Dress, Shirt, Pants, Coat, Bag, Moon, Running, Baby } from '../components/Icons'
 import { patternsAPI } from '../services/api'
+import {
+  blurWord,
+  wordContainer,
+  cardItem,
+  featureCard,
+  imageReveal,
+  staggerContainer,
+} from '../animations/variants'
 import './HomePage.css'
 
 const IMAGE_BASE = 'http://127.0.0.1:5000'
+const MotionLink = motion(Link)
+const EASE = [0.19, 1, 0.22, 1]
+
+const CATEGORIES = [
+  { name: 'Dresses',        id: 1, Icon: Dress   },
+  { name: 'Tops & Blouses', id: 2, Icon: Shirt   },
+  { name: 'Bottoms',        id: 3, Icon: Pants   },
+  { name: 'Outerwear',      id: 4, Icon: Coat    },
+  { name: 'Accessories',    id: 5, Icon: Bag     },
+  { name: 'Sleepwear',      id: 6, Icon: Moon    },
+  { name: 'Activewear',     id: 7, Icon: Running },
+  { name: 'Childrenswear',  id: 8, Icon: Baby    },
+]
 
 function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -31,40 +54,85 @@ function HomePage() {
 
   return (
     <div className="home-page">
-      
-      {/* HERO SECTION */}
+
+      {/* ─── HERO ─────────────────────────────────────────────────────── */}
       <section className="home-hero">
         <div className="container container-narrow">
-          
-          <h1 className="display-1 text-center mb-6">
-            Discover Beautiful
-            <br />
-            <span className="home-hero-accent">Sewing Patterns</span>
-          </h1>
-          
-          <p className="body-large text-center text-secondary mb-10">
-            AI-powered search to find the perfect pattern for your next creation
-          </p>
 
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="home-search-form">
+          {/* Heading — word-by-word blur reveal, on mount (heroMode) */}
+          <h1 className="display-1 text-center mb-6">
+            <motion.span
+              style={{ display: 'block' }}
+              initial="hidden"
+              animate="visible"
+              variants={wordContainer(0.1)}
+            >
+              {['Discover', 'Beautiful'].map((word, i) => (
+                <motion.span
+                  key={i}
+                  variants={blurWord}
+                  style={{ display: 'inline-block', marginRight: '0.3em' }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </motion.span>
+
+            <motion.span
+              className="home-hero-accent"
+              style={{ display: 'block' }}
+              initial="hidden"
+              animate="visible"
+              variants={wordContainer(0.3)}
+            >
+              {['Sewing', 'Patterns'].map((word, i) => (
+                <motion.span
+                  key={i}
+                  variants={blurWord}
+                  style={{ display: 'inline-block', marginRight: '0.3em' }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </motion.span>
+          </h1>
+
+          {/* Subtitle */}
+          <motion.p
+            className="body-large text-center text-secondary mb-10"
+            initial={{ opacity: 0, y: 22, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.55, ease: EASE, delay: 0.52 }}
+          >
+            AI-powered search to find the perfect pattern for your next creation
+          </motion.p>
+
+          {/* Search bar */}
+          <motion.form
+            onSubmit={handleSearch}
+            className="home-search-form"
+            initial={{ opacity: 0, y: 22, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.5, ease: EASE, delay: 0.68 }}
+          >
             <Input
               type="text"
               placeholder="Search for dress patterns, blouses, accessories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Button 
-              type="submit" 
-              variant="primary" 
-              size="large"
-            >
+            <Button type="submit" variant="primary" size="large">
               Search
             </Button>
-          </form>
+          </motion.form>
 
-          {/* Action Buttons */}
-          <div className="home-hero-actions">
+          {/* Action buttons */}
+          <motion.div
+            className="home-hero-actions"
+            initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.45, ease: EASE, delay: 0.84 }}
+          >
             <Link to="/browse">
               <Button variant="primary" size="large" fullWidth>
                 Browse All Patterns
@@ -77,57 +145,86 @@ function HomePage() {
                 </Button>
               </Link>
             )}
-          </div>
+          </motion.div>
 
         </div>
       </section>
 
-      {/* CATEGORIES SECTION */}
+      {/* ─── CATEGORIES ───────────────────────────────────────────────── */}
       <section className="home-section">
         <div className="container">
-          
-          <h2 className="h1 text-center mb-4">Browse by Category</h2>
-          <p className="body-large text-center text-secondary mb-12">
-            Find exactly what you're looking for
-          </p>
 
-          <div className="home-categories-grid">
-            {[
-              { name: 'Dresses',        id: 1, Icon: Dress   },
-              { name: 'Tops & Blouses', id: 2, Icon: Shirt   },
-              { name: 'Bottoms',        id: 3, Icon: Pants   },
-              { name: 'Outerwear',      id: 4, Icon: Coat    },
-              { name: 'Accessories',    id: 5, Icon: Bag     },
-              { name: 'Sleepwear',      id: 6, Icon: Moon    },
-              { name: 'Activewear',     id: 7, Icon: Running },
-              { name: 'Childrenswear', id: 8, Icon: Baby    },
-            ].map(({ name, id, Icon }) => (
-              <Link
-                key={id}
-                to={`/browse?category=${id}`}
+          <BlurText as="h2" text="Browse by Category" className="h1 text-center mb-4" />
+
+          <motion.p
+            className="body-large text-center text-secondary mb-12"
+            initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.55, ease: EASE, delay: 0.15 }}
+            viewport={{ once: true, amount: 0.5 }}
+          >
+            Find exactly what you're looking for
+          </motion.p>
+
+          <motion.div
+            className="home-categories-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            variants={staggerContainer(0.05, 0.08)}
+          >
+            {CATEGORIES.map((cat) => (
+              <MotionLink
+                key={cat.id}
+                to={`/browse?category=${cat.id}`}
                 className="home-category-card"
+                variants={cardItem}
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
-                <span className="home-category-icon"><Icon width={32} height={32} /></span>
-                <span className="home-category-name">{name}</span>
-              </Link>
+                <span className="home-category-icon"><cat.Icon width={32} height={32} /></span>
+                <span className="home-category-name">{cat.name}</span>
+              </MotionLink>
             ))}
-          </div>
+          </motion.div>
+
         </div>
       </section>
 
-      {/* TRENDING PATTERNS SECTION */}
+      {/* ─── TRENDING ─────────────────────────────────────────────────── */}
       <section className="home-section home-trending">
         <div className="container">
-          
-          <h2 className="h1 text-center mb-4">Most Popular This Week</h2>
-          <p className="body-large text-center text-secondary mb-12">
-            See what the community is loving
-          </p>
 
-          <div className="home-trending-grid">
+          <BlurText as="h2" text="Most Popular This Week" className="h1 text-center mb-4" />
+
+          <motion.p
+            className="body-large text-center text-secondary mb-12"
+            initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.55, ease: EASE, delay: 0.15 }}
+            viewport={{ once: true, amount: 0.5 }}
+          >
+            See what the community is loving
+          </motion.p>
+
+          <motion.div
+            className="home-trending-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            variants={staggerContainer(0.05, 0.1)}
+          >
             {trending.map((pattern) => (
-              <Link key={pattern.id} to={`/pattern/${pattern.id}`} className="home-trending-card">
-                <div className="home-trending-image">
+              <MotionLink
+                key={pattern.id}
+                to={`/pattern/${pattern.id}`}
+                className="home-trending-card"
+                variants={cardItem}
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
+                {/* Image animates with blur reveal as a nested variant */}
+                <motion.div className="home-trending-image" variants={imageReveal}>
                   {pattern.preview_image ? (
                     <img
                       src={IMAGE_BASE + pattern.preview_image}
@@ -140,18 +237,16 @@ function HomePage() {
                       <path d="M9 9h6v6H9z"/>
                     </svg>
                   )}
-                </div>
+                </motion.div>
 
                 <div className="home-trending-content">
                   <h3 className="h4">{pattern.title}</h3>
                   <div className="home-trending-meta">
                     <span>{pattern.difficulty?.name || 'All levels'}</span>
-                    <span className="home-trending-downloads">
-                      {pattern.view_count} views
-                    </span>
+                    <span className="home-trending-downloads">{pattern.view_count} views</span>
                   </div>
                 </div>
-              </Link>
+              </MotionLink>
             ))}
 
             {trending.length === 0 && (
@@ -159,31 +254,50 @@ function HomePage() {
                 No patterns yet — be the first to upload!
               </p>
             )}
-          </div>
+          </motion.div>
 
-          <div className="text-center mt-12">
+          <motion.div
+            className="text-center mt-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: EASE, delay: 0.25 }}
+            viewport={{ once: true, amount: 0.8 }}
+          >
             <Link to="/browse">
-              <Button variant="primary" size="large">
-                View All Patterns
-              </Button>
+              <Button variant="primary" size="large">View All Patterns</Button>
             </Link>
-          </div>
+          </motion.div>
 
         </div>
       </section>
 
-      {/* AI FEATURES SECTION */}
+      {/* ─── FEATURES ─────────────────────────────────────────────────── */}
       <section className="home-section">
         <div className="container">
-          
-          <h2 className="h1 text-center mb-4">Smart Features for Sewers</h2>
-          <p className="body-large text-center text-secondary mb-12">
-            Powered by artificial intelligence
-          </p>
 
-          <div className="home-features-grid">
-            
-            <div className="home-feature-card">
+          <BlurText as="h2" text="Smart Features for Sewers" className="h1 text-center mb-4" />
+
+          <motion.p
+            className="body-large text-center text-secondary mb-12"
+            initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.55, ease: EASE, delay: 0.15 }}
+            viewport={{ once: true, amount: 0.5 }}
+          >
+            Powered by artificial intelligence
+          </motion.p>
+
+          {/* perspective enables the rotateX depth effect on children */}
+          <motion.div
+            className="home-features-grid"
+            style={{ perspective: 1000 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+            variants={staggerContainer(0.05, 0.15)}
+          >
+
+            <motion.div className="home-feature-card" variants={featureCard}>
               <div className="home-feature-icon">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                   <circle cx="11" cy="11" r="8"/>
@@ -194,9 +308,9 @@ function HomePage() {
               <p className="body">
                 Find patterns even with typos using AI-powered fuzzy matching and NLP
               </p>
-            </div>
+            </motion.div>
 
-            <div className="home-feature-card">
+            <motion.div className="home-feature-card" variants={featureCard}>
               <div className="home-feature-icon">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                   <path d="M12 2v20M2 12h20"/>
@@ -207,9 +321,9 @@ function HomePage() {
               <p className="body">
                 Get personalized pattern suggestions based on your interests and history
               </p>
-            </div>
+            </motion.div>
 
-            <div className="home-feature-card">
+            <motion.div className="home-feature-card" variants={featureCard}>
               <div className="home-feature-icon">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -221,9 +335,9 @@ function HomePage() {
               <p className="body">
                 Share your patterns with the community and help fellow sewers
               </p>
-            </div>
+            </motion.div>
 
-          </div>
+          </motion.div>
         </div>
       </section>
 

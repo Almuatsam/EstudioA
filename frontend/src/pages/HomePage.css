@@ -1,11 +1,15 @@
+/* ==========================================
+   HomePage Styles
+   ========================================== */
+
 .home-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, 
-    var(--pattern-soft) 0%, 
+  background: linear-gradient(135deg,
+    var(--pattern-soft) 0%,
     var(--soft-sky) 100%);
 }
 
-/* ========== HERO SECTION ========== */
+/* ========== HERO ========== */
 
 .home-hero {
   padding: var(--space-24) var(--space-6);
@@ -18,7 +22,7 @@
   color: var(--steel-blue);
 }
 
-/* Search Form */
+/* Search form */
 .home-search-form {
   max-width: 800px;
   margin: 0 auto var(--space-10);
@@ -28,17 +32,15 @@
   border-radius: var(--radius-lg);
   background: white;
   padding: var(--space-2);
+  align-items: center;
 }
 
-.home-search-input {
+/* Make Input's wrapper div grow to fill available space */
+.home-search-form > .input-container {
   flex: 1;
 }
 
-.home-search-button {
-  flex-shrink: 0;
-}
-
-/* Hero Actions */
+/* Action buttons row */
 .home-hero-actions {
   max-width: 600px;
   margin: 0 auto;
@@ -47,11 +49,13 @@
   gap: var(--space-6);
 }
 
-/* ========== CATEGORIES ========== */
+/* ========== SHARED SECTION ========== */
 
 .home-section {
   padding: var(--space-20) var(--space-6);
 }
+
+/* ========== CATEGORIES ========== */
 
 .home-categories-grid {
   display: grid;
@@ -64,17 +68,17 @@
   border-radius: var(--radius-xl);
   padding: var(--space-10);
   text-align: center;
-  transition: all var(--transition-base);
   box-shadow: var(--shadow-1);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-4);
   text-decoration: none;
+  /* hover shadow only — transform handled by Framer Motion */
+  transition: box-shadow var(--transition-base);
 }
 
 .home-category-card:hover {
-  transform: translateY(-8px) scale(1.02);
   box-shadow: var(--shadow-2), var(--shadow-glow);
 }
 
@@ -106,11 +110,12 @@
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-1);
-  transition: all var(--transition-base);
+  text-decoration: none;
+  transition: box-shadow var(--transition-base);
+  display: block;
 }
 
 .home-trending-card:hover {
-  transform: translateY(-8px) scale(1.02);
   box-shadow: var(--shadow-2), var(--shadow-glow);
   cursor: pointer;
 }
@@ -122,6 +127,7 @@
   align-items: center;
   justify-content: center;
   color: var(--slate-blue);
+  overflow: hidden;
 }
 
 .home-trending-content {
@@ -155,11 +161,12 @@
   padding: var(--space-10);
   text-align: center;
   box-shadow: var(--shadow-1);
-  transition: all var(--transition-base);
+  transition: box-shadow var(--transition-base);
+  /* preserve-3d ensures rotateX depth works from the parent perspective */
+  transform-style: preserve-3d;
 }
 
 .home-feature-card:hover {
-  transform: translateY(-8px) scale(1.02);
   box-shadow: var(--shadow-2), var(--shadow-glow);
 }
 
@@ -181,7 +188,7 @@
   .home-trending-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .home-features-grid {
     grid-template-columns: 1fr;
   }
@@ -192,17 +199,21 @@
     padding: var(--space-12) var(--space-4);
     min-height: auto;
   }
-  
+
   .home-search-form {
     flex-direction: column;
   }
-  
+
   .home-hero-actions {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
-  
+
   .home-categories-grid,
   .home-trending-grid {
     grid-template-columns: 1fr;
   }
 }
+
+/* ========== REDUCED MOTION ========== */
+/* Framer Motion detects prefers-reduced-motion automatically and
+   disables animations. No extra CSS overrides needed. */

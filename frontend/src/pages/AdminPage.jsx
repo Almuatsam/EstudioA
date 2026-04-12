@@ -17,6 +17,9 @@ function AdminPage() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState(null)
+  const [modal, setModal] = useState(null)       // 'downloads' | 'favorites' | null
+  const [modalData, setModalData] = useState([])
+  const [modalLoading, setModalLoading] = useState(false)
 
   useEffect(() => {
     if (!isAuthenticated || user?.role !== 'admin') {
@@ -49,6 +52,30 @@ function AdminPage() {
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type })
+  }
+
+  const openModal = async (type) => {
+    setModal(type)
+    setModalData([])
+    setModalLoading(true)
+    try {
+      if (type === 'downloads') {
+        const data = await adminAPI.getDownloadsDetails()
+        setModalData(data.downloads || [])
+      } else {
+        const data = await adminAPI.getFavoritesDetails()
+        setModalData(data.favorites || [])
+      }
+    } catch (e) {
+      console.error('Failed to load modal data:', e)
+    } finally {
+      setModalLoading(false)
+    }
+  }
+
+  const closeModal = () => {
+    setModal(null)
+    setModalData([])
   }
 
   const handleApprovePattern = async (patternId) => {
@@ -135,7 +162,7 @@ function AdminPage() {
             </div>
           </div>
 
-          <div className="admin-stat-card">
+          <div className="admin-stat-card admin-stat-card--clickable" onClick={() => openModal('downloads')}>
             <div className="admin-stat-icon"><Download width={28} height={28} /></div>
             <div className="admin-stat-content">
               <div className="admin-stat-value">{stats?.total_downloads || 0}</div>
@@ -143,7 +170,7 @@ function AdminPage() {
             </div>
           </div>
 
-          <div className="admin-stat-card">
+          <div className="admin-stat-card admin-stat-card--clickable" onClick={() => openModal('favorites')}>
             <div className="admin-stat-icon"><Heart width={28} height={28} /></div>
             <div className="admin-stat-content">
               <div className="admin-stat-value">{stats?.total_favorites || 0}</div>
@@ -273,6 +300,58 @@ function AdminPage() {
           type={toast.type}
           onClose={() => setToast(null)}
         />
+      )}
+
+      {/* DETAIL MODAL */}
+      {modal && (
+        <div className="admin-modal-overlay" onClick={closeModal}>
+          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <h2 className="h2">
+                {modal === 'downloads' ? 'Download Details' : 'Favorite Details'}
+              </h2>
+              <button className="admin-modal-close" onClick={closeModal}>✕</button>
+            </div>
+
+            <div className="admin-modal-body">
+              {modalLoading ? (
+                <div className="admin-modal-loading">
+                  <LoadingSpinner size="medium" text="Loading..." />
+                </div>
+              ) : modalData.length === 0 ? (
+                <p className="body text-secondary" style={{ textAlign: 'center', padding: '2rem' }}>
+                  No records found.
+                </p>
+              ) : (
+                <div className="admin-table-container" style={{ boxShadow: 'none', padding: 0 }}>
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Pattern</th>
+                        <th>{modal === 'downloads' ? 'Downloaded At' : 'Favorited At'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {modalData.map((row, i) => (
+                        <tr key={i}>
+                          <td>{row.user_name}</td>
+                          <td>{row.user_email}</td>
+                          <td>{row.pattern_title}</td>
+                          <td>
+                            {new Date(modal === 'downloads' ? row.downloaded_at : row.created_at)
+                              .toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
     </div>

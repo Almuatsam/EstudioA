@@ -21,12 +21,15 @@ def fuzzy_search_patterns(search_term, threshold=60):
     
     # Check each pattern
     for pattern in all_patterns:
-        # Compare search term to pattern title
-        title_score = fuzz.ratio(search_term.lower(), pattern.title.lower())
-        
-        # Compare search term to pattern tags
+        # Compare search term to pattern title (partial_ratio handles substrings/typos)
+        title_score = fuzz.partial_ratio(search_term.lower(), pattern.title.lower())
+
+        # Compare search term to each individual tag
         tags_text = pattern.tags if pattern.tags else ""
-        tags_score = fuzz.ratio(search_term.lower(), tags_text.lower())
+        tags_score = max(
+            (fuzz.partial_ratio(search_term.lower(), tag.strip().lower()) for tag in tags_text.split(',') if tag.strip()),
+            default=0
+        )
         
         # Use the better score
         best_score = max(title_score, tags_score)

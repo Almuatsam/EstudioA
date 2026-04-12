@@ -1,7 +1,7 @@
 import LoadingSpinner from '../components/LoadingSpinner'
 import Button from '../components/Button'
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { patternsAPI, recommendationsAPI, favoritesAPI } from '../services/api'
 import { PatternPlaceholder, Heart, HeartSolid } from '../components/Icons'
@@ -12,6 +12,7 @@ const viewedPatterns = new Set()
 
 function PatternDetailPage() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
   const [pattern, setPattern] = useState(null)
   const [recommendations, setRecommendations] = useState([])
@@ -37,7 +38,11 @@ function PatternDetailPage() {
   }, [id, isAuthenticated])
 
   const handleFavoriteToggle = async () => {
-    if (!isAuthenticated || favoriteLoading) return
+    if (!isAuthenticated) {
+      navigate('/login')
+      return
+    }
+    if (favoriteLoading) return
     setFavoriteLoading(true)
     try {
       if (isFavorited) {
@@ -75,17 +80,43 @@ function PatternDetailPage() {
     }
   }
 
-  const handleDownload = () => {
-    if (pattern?.pdf_file) {
+  const handleDownload = async () => {
+    if (!localStorage.getItem('token')) {
+      navigate('/login')
+      return
+    }
+
+    if (!pattern?.pdf_file) {
+      alert('PDF file not available')
+      return
+    }
+
+    try {
+      const token = localStorage.getItem('token')
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+
+      // Single request: backend records download AND returns the PDF
+      const response = await fetch(
+        `http://127.0.0.1:5000/api/downloads/file/${pattern.id}`,
+        { headers }
+      )
+
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`)
+      }
+
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
-      link.href = `http://127.0.0.1:5000${pattern.pdf_file}`
+      link.href = url
       link.download = `${pattern.title}.pdf`
-      link.target = '_blank'
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
-    } else {
-      alert('PDF file not available')
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      console.error('[Download] Failed:', e)
+      alert('Download failed. Please try again.')
     }
   }
 

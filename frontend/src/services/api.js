@@ -158,6 +158,16 @@ export const adminAPI = {
   deleteUser: async (userId) => {
     const response = await apiClient.delete(`/admin/users/${userId}`)
     return response.data
+  },
+
+  getDownloadsDetails: async () => {
+    const response = await apiClient.get('/admin/downloads-details')
+    return response.data
+  },
+
+  getFavoritesDetails: async () => {
+    const response = await apiClient.get('/admin/favorites-details')
+    return response.data
   }
 }
 

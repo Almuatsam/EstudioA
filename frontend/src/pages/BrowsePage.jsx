@@ -21,6 +21,9 @@ function BrowsePage() {
   useEffect(() => {
     loadCategories()
     loadDifficulties()
+  }, [])
+
+  useEffect(() => {
     loadPatterns()
   }, [selectedCategory, selectedDifficulty, searchQuery])
 
@@ -45,12 +48,18 @@ function BrowsePage() {
   const loadPatterns = async () => {
     try {
       setLoading(true)
-      const params = {}
-      if (selectedCategory) params.category_id = selectedCategory
-      if (selectedDifficulty) params.difficulty_id = selectedDifficulty
-      
-      const data = await patternsAPI.getPatterns(params)
-      setPatterns(data.patterns || [])
+      if (searchQuery.trim()) {
+        // Use fuzzy + semantic AI search endpoint
+        const data = await patternsAPI.searchPatterns(searchQuery.trim())
+        setPatterns(data.patterns || [])
+      } else {
+        // No search query — use regular filtered listing
+        const params = {}
+        if (selectedCategory) params.category_id = selectedCategory
+        if (selectedDifficulty) params.difficulty_id = selectedDifficulty
+        const data = await patternsAPI.getPatterns(params)
+        setPatterns(data.patterns || [])
+      }
     } catch (error) {
       console.error('Failed to load patterns:', error)
       setPatterns([])
@@ -59,21 +68,7 @@ function BrowsePage() {
     }
   }
 
-  const handleSearch = async () => {
-    if (searchQuery.trim()) {
-      try {
-        setLoading(true)
-        const data = await patternsAPI.searchPatterns(searchQuery)
-        setPatterns(data.patterns || [])
-      } catch (error) {
-        console.error('Search failed:', error)
-      } finally {
-        setLoading(false)
-      }
-    } else {
-      loadPatterns()
-    }
-  }
+  const handleSearch = () => loadPatterns()
 
   const handleClearFilters = () => {
     setSearchQuery('')

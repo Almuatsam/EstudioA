@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.pattern import Pattern, Category, DifficultyLevel
 from models.user import User
 from models.favorite import Favorite
+from models.download_history import DownloadHistory
 from models import db
 from datetime import datetime
 from services.email_service import notify_designer_approved, notify_designer_rejected, notify_users_new_pattern
@@ -316,6 +317,72 @@ def delete_user(user_id):
 
     except Exception as e:
         db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@admin_bp.route('/downloads-details', methods=['GET'])
+@jwt_required()
+def get_downloads_details():
+    """Get all download records with user and pattern info (admin only)"""
+    user, error_response, status_code = admin_required()
+    if error_response:
+        return jsonify(error_response), status_code
+
+    try:
+        records = (
+            db.session.query(DownloadHistory, User, Pattern)
+            .join(User, DownloadHistory.user_id == User.id)
+            .join(Pattern, DownloadHistory.pattern_id == Pattern.id)
+            .order_by(DownloadHistory.downloaded_at.desc())
+            .all()
+        )
+
+        data = [
+            {
+                'user_email': u.email,
+                'user_name': u.full_name or u.username,
+                'pattern_title': p.title,
+                'downloaded_at': d.downloaded_at.isoformat() if d.downloaded_at else None,
+            }
+            for d, u, p in records
+        ]
+
+        return jsonify({'downloads': data}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@admin_bp.route('/favorites-details', methods=['GET'])
+@jwt_required()
+def get_favorites_details():
+    """Get all favorite records with user and pattern info (admin only)"""
+    user, error_response, status_code = admin_required()
+    if error_response:
+        return jsonify(error_response), status_code
+
+    try:
+        records = (
+            db.session.query(Favorite, User, Pattern)
+            .join(User, Favorite.user_id == User.id)
+            .join(Pattern, Favorite.pattern_id == Pattern.id)
+            .order_by(Favorite.created_at.desc())
+            .all()
+        )
+
+        data = [
+            {
+                'user_email': u.email,
+                'user_name': u.full_name or u.username,
+                'pattern_title': p.title,
+                'created_at': f.created_at.isoformat() if f.created_at else None,
+            }
+            for f, u, p in records
+        ]
+
+        return jsonify({'favorites': data}), 200
+
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 

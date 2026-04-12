@@ -180,6 +180,76 @@
   color: var(--navy-dark);
 }
 
+.admin-stat-card--clickable {
+  cursor: pointer;
+}
+
+.admin-stat-card--clickable:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-3);
+  outline: 2px solid var(--steel-blue);
+}
+
+/* MODAL */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-4);
+}
+
+.admin-modal {
+  background: var(--pattern-soft);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 860px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+}
+
+.admin-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6) var(--space-8);
+  border-bottom: 1px solid rgba(var(--steel-blue-rgb), 0.2);
+  flex-shrink: 0;
+}
+
+.admin-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--slate-blue);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  line-height: 1;
+}
+
+.admin-modal-close:hover {
+  background: rgba(var(--steel-blue-rgb), 0.12);
+}
+
+.admin-modal-body {
+  overflow-y: auto;
+  padding: var(--space-6) var(--space-8);
+  flex: 1;
+}
+
+.admin-modal-loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-10);
+}
+
 @media (max-width: 1024px) {
   .admin-stats-grid {
     grid-template-columns: repeat(2, 1fr);
