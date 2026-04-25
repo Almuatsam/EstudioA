@@ -21,15 +21,15 @@
 }
 
 .toast-success .toast-content {
-  background: #4CAF50;
+  background: var(--color-success);
 }
 
 .toast-error .toast-content {
-  background: #EF5350;
+  background: var(--color-danger);
 }
 
 .toast-warning .toast-content {
-  background: #FFA726;
+  background: var(--color-warning);
 }
 
 .toast-icon {

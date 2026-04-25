@@ -34,9 +34,9 @@
 }
 
 .login-error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+  background: rgba(var(--color-danger-rgb), 0.1);
+  color: var(--color-danger);
+  border: 1px solid rgba(var(--color-danger-rgb), 0.3);
   padding: var(--space-3);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-6);
@@ -175,7 +175,7 @@
 
 .login-google-error {
   font-size: var(--text-body-sm);
-  color: #721c24;
+  color: var(--color-danger);
   text-align: center;
   margin-top: calc(var(--space-1) * -1);
   margin-bottom: var(--space-2);

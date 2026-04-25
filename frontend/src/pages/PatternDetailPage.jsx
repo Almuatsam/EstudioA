@@ -1,5 +1,6 @@
 import LoadingSpinner from '../components/LoadingSpinner'
 import Button from '../components/Button'
+import Toast from '../components/Toast'
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -19,6 +20,9 @@ function PatternDetailPage() {
   const [loading, setLoading] = useState(true)
   const [isFavorited, setIsFavorited] = useState(false)
   const [favoriteLoading, setFavoriteLoading] = useState(false)
+  const [toast, setToast] = useState(null)
+
+  const showToast = (message, type = 'success') => setToast({ message, type })
 
   useEffect(() => {
     loadPattern()
@@ -48,12 +52,15 @@ function PatternDetailPage() {
       if (isFavorited) {
         await favoritesAPI.removeFavorite(id)
         setIsFavorited(false)
+        showToast('Removed from favorites', 'success')
       } else {
         await favoritesAPI.addFavorite(id)
         setIsFavorited(true)
+        showToast('Saved to favorites', 'success')
       }
     } catch (error) {
       console.error('Failed to toggle favorite:', error)
+      showToast('Could not update favorites. Try again.', 'error')
     } finally {
       setFavoriteLoading(false)
     }
@@ -87,7 +94,7 @@ function PatternDetailPage() {
     }
 
     if (!pattern?.pdf_file) {
-      alert('PDF file not available')
+      showToast('PDF file not available for this pattern', 'error')
       return
     }
 
@@ -114,9 +121,10 @@ function PatternDetailPage() {
       link.click()
       document.body.removeChild(link)
       URL.revokeObjectURL(url)
+      showToast('Download started', 'success')
     } catch (e) {
       console.error('[Download] Failed:', e)
-      alert('Download failed. Please try again.')
+      showToast('Download failed. Please try again.', 'error')
     }
   }
 
@@ -144,6 +152,13 @@ function PatternDetailPage() {
 
   return (
     <div className="pattern-detail-page">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="pattern-detail-container">
         
         <Link to="/browse" className="pattern-detail-back">
@@ -216,28 +231,36 @@ function PatternDetailPage() {
 
             {/* Actions */}
             <div className="pattern-detail-actions">
-              <Button
-                variant="primary"
-                size="large"
-                fullWidth
-                onClick={handleDownload}
-              >
-                Download PDF Pattern
-              </Button>
+              {isAuthenticated ? (
+                <>
+                  <Button
+                    variant="primary"
+                    size="large"
+                    fullWidth
+                    onClick={handleDownload}
+                  >
+                    Download PDF Pattern
+                  </Button>
 
-              {isAuthenticated && (
-                <button
-                  className={`pattern-detail-favorite-btn ${isFavorited ? 'favorited' : ''}`}
-                  onClick={handleFavoriteToggle}
-                  disabled={favoriteLoading}
-                  aria-label={isFavorited ? 'Remove from favorites' : 'Save to favorites'}
-                >
-                  {isFavorited
-                    ? <HeartSolid width={22} height={22} />
-                    : <Heart width={22} height={22} />
-                  }
-                  <span>{isFavorited ? 'Saved' : 'Save to Favorites'}</span>
-                </button>
+                  <button
+                    className={`pattern-detail-favorite-btn ${isFavorited ? 'favorited' : ''}`}
+                    onClick={handleFavoriteToggle}
+                    disabled={favoriteLoading}
+                    aria-label={isFavorited ? 'Remove from favorites' : 'Save to favorites'}
+                  >
+                    {isFavorited
+                      ? <HeartSolid width={22} height={22} />
+                      : <Heart width={22} height={22} />
+                    }
+                    <span>{isFavorited ? 'Saved' : 'Save to Favorites'}</span>
+                  </button>
+                </>
+              ) : (
+                <Link to="/login">
+                  <Button variant="primary" size="large" fullWidth>
+                    Log in to Download
+                  </Button>
+                </Link>
               )}
             </div>
 

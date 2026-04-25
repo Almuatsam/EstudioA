@@ -214,6 +214,4 @@
   }
 }
 
-/* ========== REDUCED MOTION ========== */
-/* Framer Motion detects prefers-reduced-motion automatically and
-   disables animations. No extra CSS overrides needed. */
+

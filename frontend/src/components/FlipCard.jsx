@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { favoritesAPI } from '../services/api'
 import { PatternPlaceholder, Heart, HeartSolid } from './Icons'
+import Toast from './Toast'
 import './FlipCard.css'
 
 function FlipCard({ pattern }) {
@@ -10,6 +11,16 @@ function FlipCard({ pattern }) {
   const [isFlipped, setIsFlipped] = useState(false)
   const [isFavorited, setIsFavorited] = useState(false)
   const [favoriteLoading, setFavoriteLoading] = useState(false)
+  const [toast, setToast] = useState(null)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+
+  const showToast = (message, type = 'success') => setToast({ message, type })
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', onResize, { passive: true })
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -27,33 +38,30 @@ function FlipCard({ pattern }) {
       if (isFavorited) {
         await favoritesAPI.removeFavorite(pattern.id)
         setIsFavorited(false)
+        showToast('Removed from favorites', 'success')
       } else {
         await favoritesAPI.addFavorite(pattern.id)
         setIsFavorited(true)
+        showToast('Saved to favorites', 'success')
       }
     } catch (error) {
       console.error('Failed to toggle favorite:', error)
+      showToast('Could not update favorites. Try again.', 'error')
     } finally {
       setFavoriteLoading(false)
     }
   }
 
   const handleClick = () => {
-    if (window.innerWidth < 768) {
-      setIsFlipped(!isFlipped)
-    }
+    if (isMobile) setIsFlipped(!isFlipped)
   }
 
   const handleMouseEnter = () => {
-    if (window.innerWidth >= 768) {
-      setIsFlipped(true)
-    }
+    if (!isMobile) setIsFlipped(true)
   }
 
   const handleMouseLeave = () => {
-    if (window.innerWidth >= 768) {
-      setIsFlipped(false)
-    }
+    if (!isMobile) setIsFlipped(false)
   }
 
   const handleDownload = (e) => {
@@ -66,18 +74,22 @@ function FlipCard({ pattern }) {
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+      showToast('Download started', 'success')
     } else {
-      alert('PDF file not available for this pattern')
+      showToast('PDF file not available for this pattern', 'error')
     }
   }
 
   return (
-    <div 
+    <div
       className={`flip-card-container ${isFlipped ? 'flipped' : ''}`}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
+      )}
       <div className="flip-card">
         
         {/* FRONT FACE */}
@@ -164,29 +176,31 @@ function FlipCard({ pattern }) {
                 </svg>
               </Link>
 
-              <button
-                onClick={handleDownload}
-                className="flip-card-btn flip-card-btn-secondary"
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 2v10M4 8l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-                Download PDF
-              </button>
-
               {isAuthenticated && (
-                <button
-                  className={`flip-card-btn flip-card-btn-favorite ${isFavorited ? 'favorited' : ''}`}
-                  onClick={handleFavoriteToggle}
-                  disabled={favoriteLoading}
-                  aria-label={isFavorited ? 'Remove from favorites' : 'Save to favorites'}
-                >
-                  {isFavorited
-                    ? <HeartSolid width={16} height={16} />
-                    : <Heart width={16} height={16} />
-                  }
-                  {isFavorited ? 'Saved' : 'Save to Favorites'}
-                </button>
+                <>
+                  <button
+                    onClick={handleDownload}
+                    className="flip-card-btn flip-card-btn-secondary"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M8 2v10M4 8l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                    Download PDF
+                  </button>
+
+                  <button
+                    className={`flip-card-btn flip-card-btn-favorite ${isFavorited ? 'favorited' : ''}`}
+                    onClick={handleFavoriteToggle}
+                    disabled={favoriteLoading}
+                    aria-label={isFavorited ? 'Remove from favorites' : 'Save to favorites'}
+                  >
+                    {isFavorited
+                      ? <HeartSolid width={16} height={16} />
+                      : <Heart width={16} height={16} />
+                    }
+                    {isFavorited ? 'Saved' : 'Save to Favorites'}
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -198,7 +212,7 @@ function FlipCard({ pattern }) {
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
-          <span>Tap to flip</span>
+          <span>{isMobile ? 'Tap to flip' : 'Hover to flip'}</span>
         </div>
       )}
     </div>

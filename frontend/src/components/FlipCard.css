@@ -103,13 +103,13 @@
 }
 
 .flip-card-btn-favorite.favorited {
-  color: #ef4444;
-  border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+  background: rgba(var(--color-danger-rgb), 0.1);
 }
 
 .flip-card-btn-favorite.favorited:hover {
-  background: rgba(239, 68, 68, 0.18);
+  background: rgba(var(--color-danger-rgb), 0.18);
 }
 
 .flip-card-btn-favorite:disabled {

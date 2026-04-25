@@ -18,7 +18,7 @@ import {
 import './HomePage.css'
 
 const IMAGE_BASE = 'http://127.0.0.1:5000'
-const MotionLink = motion(Link)
+const MotionLink = motion.create(Link)
 const EASE = [0.19, 1, 0.22, 1]
 
 const CATEGORIES = [

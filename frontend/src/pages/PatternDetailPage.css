@@ -166,13 +166,13 @@
 }
 
 .pattern-detail-favorite-btn.favorited {
-  border-color: #ef4444;
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.06);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  background: rgba(var(--color-danger-rgb), 0.06);
 }
 
 .pattern-detail-favorite-btn.favorited:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.12);
+  background: rgba(var(--color-danger-rgb), 0.12);
 }
 
 .pattern-detail-favorite-btn:disabled {

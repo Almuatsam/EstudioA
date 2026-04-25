@@ -1,6 +1,7 @@
 import LoadingSpinner from '../components/LoadingSpinner'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import Toast from '../components/Toast'
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -15,6 +16,9 @@ function UploadPatternPage() {
   const [difficulties, setDifficulties] = useState([])
   const [loading, setLoading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
+  const [toast, setToast] = useState(null)
+
+  const showToast = (message, type = 'success') => setToast({ message, type })
 
   // Tag state
   const [tags, setTags] = useState([])
@@ -123,12 +127,12 @@ function UploadPatternPage() {
     e.preventDefault()
     
     if (!files.pdfFile) {
-      alert('Please upload a PDF pattern file')
+      showToast('Please upload a PDF pattern file', 'error')
       return
     }
-    
+
     if (!files.imageFile) {
-      alert('Please upload a preview image')
+      showToast('Please upload a preview image', 'error')
       return
     }
 
@@ -156,12 +160,12 @@ function UploadPatternPage() {
       await patternsAPI.createPattern(patternData)
       
       setUploadProgress('Success!')
-      alert('Pattern uploaded successfully! It will be reviewed by an admin.')
-      navigate('/designer-dashboard')
+      showToast('Pattern uploaded! It will be reviewed by an admin.', 'success')
+      setTimeout(() => navigate('/designer-dashboard'), 1500)
       
     } catch (error) {
       console.error('Upload failed:', error)
-      alert('Failed to upload pattern: ' + (error.response?.data?.error || error.message))
+      showToast('Upload failed: ' + (error.response?.data?.error || error.message), 'error')
     } finally {
       setLoading(false)
       setUploadProgress('')
@@ -174,6 +178,13 @@ function UploadPatternPage() {
 
   return (
     <div className="upload-page">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="upload-container">
         
         <div className="upload-header">
@@ -209,15 +220,19 @@ function UploadPatternPage() {
               />
             </div>
 
-            <Input
-              label="Description"
-              type="text"
-              name="description"
-              required
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="Describe your pattern, including details about fit, fabric recommendations..."
-            />
+            <div className="input-container">
+              <label className="input-label">Description *</label>
+              <textarea
+                name="description"
+                required
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Describe your pattern, including details about fit, fabric recommendations..."
+                className="input"
+                rows={4}
+                style={{ resize: 'vertical' }}
+              />
+            </div>
 
             <div className="upload-form-grid">
               <div className="input-container">

@@ -303,8 +303,8 @@ function UserAccountPage() {
               </div>
             ) : (
               <div className="account-grid">
-                {downloads.map((pattern) => (
-                  <div key={pattern.id} className="account-pattern-card">
+                {downloads.map((pattern, i) => (
+                  <div key={`${pattern.id}-${i}`} className="account-pattern-card">
                     <div className="account-pattern-image">
                       {pattern.preview_image ? (
                         <img 

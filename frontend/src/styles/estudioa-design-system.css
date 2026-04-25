@@ -9,6 +9,11 @@
   --soft-sky: #C5DBE8;
   --pattern-soft: #F5F1E8;
   
+  /* Semantic status colors */
+  --color-danger: #dc3545;
+  --color-success: #28a745;
+  --color-warning: #ffc107;
+
   /* Color RGB (for rgba usage) */
   --navy-dark-rgb: 31, 47, 58;
   --steel-blue-rgb: 92, 118, 138;
@@ -16,6 +21,7 @@
   --slate-blue-rgb: 110, 133, 148;
   --soft-sky-rgb: 197, 219, 232;
   --pattern-soft-rgb: 245, 241, 232;
+  --color-danger-rgb: 220, 53, 69;
   
   /* === TYPOGRAPHY === */
   --font-family: 'Outfit', system-ui, -apple-system, sans-serif;
