@@ -6,6 +6,9 @@ keywords that aren't an exact match.
 """
 
 import re
+import spacy
+
+_nlp = spacy.load("en_core_web_sm")
 
 # ---------------------------------------------------------------------------
 # Preset vocabulary
@@ -205,9 +208,7 @@ def generate_tags(
 def _extract_nouns_spacy(text: str) -> list[str]:
     """Extract nouns from text using spaCy, return lowercase."""
     try:
-        import spacy
-        nlp = spacy.load("en_core_web_sm")
-        doc = nlp(text[:1000])  # cap input length
+        doc = _nlp(text[:1000])
         return [token.lemma_.lower() for token in doc if token.pos_ in ("NOUN", "PROPN")]
     except Exception:
         return []
