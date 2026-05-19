@@ -9,7 +9,7 @@
 .loading-spinner {
   border-radius: 50%;
   border-style: solid;
-  border-color: #A9BFCA;
+  border-color: rgba(255, 255, 255, 0.40);
   border-top-color: transparent;
   animation: loading-spin 800ms linear infinite;
 }
@@ -36,7 +36,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: #6E8594;
+  color: rgba(255, 255, 255, 0.75);
   animation: loading-pulse 1.5s ease-in-out infinite;
 }
 

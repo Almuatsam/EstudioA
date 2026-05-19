@@ -16,43 +16,49 @@ export function AuthProvider({ children }) {
   }, [])
 
   const loadUser = async () => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      try {
-        const data = await authAPI.getCurrentUser()
-        setUser(data.user)
-        setIsAuthenticated(true)
-        setIsAdmin(data.user.role === 'admin')
-      } catch (error) {
-        console.error('Failed to load user:', error)
-        localStorage.removeItem('token')
-      }
+    const token = localStorage.getItem('access_token')
+    if (!token) {
+      setLoading(false)
+      return
     }
-    setLoading(false)
+    try {
+      const data = await authAPI.getCurrentUser()
+      setUser(data.user)
+      setIsAuthenticated(true)
+      setIsAdmin(data.user.role === 'admin')
+    } catch {
+      // Token invalid or expired — clear it so we don't retry on next load
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const _applyAuth = (userData, accessToken, refreshToken) => {
+    localStorage.setItem('access_token', accessToken)
+    if (refreshToken) localStorage.setItem('refresh_token', refreshToken)
+    setUser(userData)
+    setIsAuthenticated(true)
+    setIsAdmin(userData.role === 'admin')
+  }
+
+  const _redirectByRole = (role) => {
+    if (role === 'designer') navigate('/designer-dashboard')
+    else if (role === 'admin') navigate('/admin')
+    else navigate('/account')
   }
 
   const login = async (credentials) => {
     try {
       const data = await authAPI.login(credentials)
-      localStorage.setItem('token', data.token)
-      setUser(data.user)
-      setIsAuthenticated(true)
-      setIsAdmin(data.user.role === 'admin')
-      
-      // Redirect based on user role
-      if (data.user.role === 'designer') {
-        navigate('/designer-dashboard')
-      } else if (data.user.role === 'admin') {
-        navigate('/admin')
-      } else {
-        navigate('/account')
-      }
-      
+      _applyAuth(data.user, data.access_token, data.refresh_token)
+      _redirectByRole(data.user.role)
       return { success: true }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.error || 'Login failed' 
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Login failed'
       }
     }
   }
@@ -60,25 +66,13 @@ export function AuthProvider({ children }) {
   const register = async (userData) => {
     try {
       const data = await authAPI.register(userData)
-      localStorage.setItem('token', data.token)
-      setUser(data.user)
-      setIsAuthenticated(true)
-      setIsAdmin(data.user.role === 'admin')
-      
-      // Redirect based on user role
-      if (data.user.role === 'designer') {
-        navigate('/designer-dashboard')
-      } else if (data.user.role === 'admin') {
-        navigate('/admin')
-      } else {
-        navigate('/account')
-      }
-      
+      _applyAuth(data.user, data.access_token, data.refresh_token)
+      _redirectByRole(data.user.role)
       return { success: true }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.error || 'Registration failed' 
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Registration failed'
       }
     }
   }
@@ -86,19 +80,8 @@ export function AuthProvider({ children }) {
   const googleLogin = async ({ code, redirect_uri }) => {
     try {
       const data = await authAPI.googleLogin({ code, redirect_uri })
-      localStorage.setItem('token', data.token)
-      setUser(data.user)
-      setIsAuthenticated(true)
-      setIsAdmin(data.user.role === 'admin')
-
-      if (data.user.role === 'designer') {
-        navigate('/designer-dashboard')
-      } else if (data.user.role === 'admin') {
-        navigate('/admin')
-      } else {
-        navigate('/account')
-      }
-
+      _applyAuth(data.user, data.access_token, data.refresh_token)
+      _redirectByRole(data.user.role)
       return { success: true }
     } catch (error) {
       return {
@@ -108,8 +91,14 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const logout = () => {
-    localStorage.removeItem('token')
+  const logout = async () => {
+    try {
+      await authAPI.logout()
+    } catch {
+      // clear state regardless of network failure
+    }
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
     setUser(null)
     setIsAuthenticated(false)
     setIsAdmin(false)

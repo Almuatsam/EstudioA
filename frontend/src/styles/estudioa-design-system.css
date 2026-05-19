@@ -85,6 +85,8 @@
   --shadow-glow: 0 0 2rem rgba(var(--steel-blue-rgb), 0.4);
   --shadow-glow-strong: 0 0 3rem rgba(var(--steel-blue-rgb), 0.6);
   --shadow-inset: inset 0 0.125rem 0.25rem rgba(var(--navy-dark-rgb), 0.05);
+  --shadow-glass: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 20px rgba(30, 60, 90, 0.18);
+  --shadow-glass-hover: inset 0 1px 0 rgba(255, 255, 255, 0.40), 0 8px 32px rgba(30, 60, 90, 0.26);
   
   /* === TRANSITIONS === */
   --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
@@ -132,7 +134,8 @@ body {
   font-weight: var(--font-regular);
   line-height: var(--lh-relaxed);
   color: var(--navy-dark);
-  background: var(--pattern-soft);
+  background: linear-gradient(135deg, #6c8aa3, #7b9bb3, #5f7f99);
+  background-attachment: fixed;
   overflow-x: hidden;
 }
 
@@ -229,7 +232,7 @@ body {
 }
 
 .text-light {
-  color: var(--pattern-soft);
+  color: #F5F0E8;
 }
 
 /* ========== LAYOUT UTILITIES ========== */
@@ -301,15 +304,14 @@ body {
 
 /* ========== GRADIENT BACKGROUNDS ========== */
 .bg-gradient-page {
-  background: linear-gradient(135deg, 
-    var(--pattern-soft) 0%, 
-    var(--soft-sky) 100%);
+  background: linear-gradient(135deg, #6c8aa3, #7b9bb3, #5f7f99);
+  background-attachment: fixed;
 }
 
 .bg-gradient-hero {
   background: radial-gradient(circle at top right,
-    rgba(var(--powder-blue-rgb), 0.3) 0%,
-    rgba(var(--pattern-soft-rgb), 0) 60%);
+    rgba(122, 168, 196, 0.35) 0%,
+    rgba(74, 111, 138, 0) 60%);
 }
 
 .bg-gradient-primary {

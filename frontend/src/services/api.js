@@ -2,24 +2,34 @@ import axios from 'axios'
 
 const API_BASE_URL = 'http://127.0.0.1:5000/api'
 
-// Create axios instance with default config
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  headers: { 'Content-Type': 'application/json' }
 })
 
-// Add token to requests if available
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
+// Attach stored token to every request
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token')
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`
+  }
+  return config
+})
+
+// On 401, clear stored credentials so the next loadUser() skips the API call
+apiClient.interceptors.response.use(
+  (response) => response,
   (error) => {
+    if (error.response?.status === 401) {
+      const url = error.config?.url || ''
+      // Don't clear on login/password failures — those 401s are expected
+      const isCredentialCheck = url.includes('/auth/login') ||
+                                url.includes('/auth/change-password')
+      if (!isCredentialCheck) {
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
+      }
+    }
     return Promise.reject(error)
   }
 )
@@ -41,12 +51,20 @@ export const authAPI = {
     return response.data
   },
 
-  logout: () => {
-    localStorage.removeItem('token')
+  logout: async () => {
+    await apiClient.post('/auth/logout')
   },
 
   googleLogin: async ({ code, redirect_uri }) => {
     const response = await apiClient.post('/auth/google', { code, redirect_uri })
+    return response.data
+  },
+
+  refreshToken: async () => {
+    const refreshToken = localStorage.getItem('refresh_token')
+    const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {}, {
+      headers: { Authorization: `Bearer ${refreshToken}` }
+    })
     return response.data
   }
 }
@@ -79,7 +97,7 @@ export const patternsAPI = {
   },
 
   searchPatterns: async (searchTerm) => {
-    const response = await apiClient.get(`/patterns/search?q=${searchTerm}`)
+    const response = await apiClient.get('/patterns/search', { params: { q: searchTerm } })
     return response.data
   },
 
@@ -98,6 +116,11 @@ export const patternsAPI = {
       title, description, category_name, difficulty_name
     })
     return response.data
+  },
+
+  deletePattern: async (id) => {
+    const response = await apiClient.delete(`/patterns/${id}`)
+    return response.data
   }
 }
 
@@ -106,11 +129,8 @@ export const uploadAPI = {
   uploadPatternFile: async (file) => {
     const formData = new FormData()
     formData.append('file', file)
-    
     const response = await apiClient.post('/upload/pattern-file', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+      headers: { 'Content-Type': 'multipart/form-data' }
     })
     return response.data
   },
@@ -118,11 +138,8 @@ export const uploadAPI = {
   uploadPatternImage: async (file) => {
     const formData = new FormData()
     formData.append('file', file)
-    
     const response = await apiClient.post('/upload/pattern-image', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+      headers: { 'Content-Type': 'multipart/form-data' }
     })
     return response.data
   }
@@ -190,17 +207,17 @@ export const favoritesAPI = {
     const response = await apiClient.get('/favorites')
     return response.data
   },
-  
+
   addFavorite: async (patternId) => {
     const response = await apiClient.post(`/favorites/${patternId}`)
     return response.data
   },
-  
+
   removeFavorite: async (patternId) => {
     const response = await apiClient.delete(`/favorites/${patternId}`)
     return response.data
   },
-  
+
   checkFavorite: async (patternId) => {
     const response = await apiClient.get(`/favorites/check/${patternId}`)
     return response.data
@@ -213,7 +230,7 @@ export const downloadsAPI = {
     const response = await apiClient.get(`/downloads/history?page=${page}&per_page=${perPage}`)
     return response.data
   },
-  
+
   trackDownload: async (patternId) => {
     const response = await apiClient.post(`/downloads/track/${patternId}`)
     return response.data
@@ -226,12 +243,12 @@ export const userAPI = {
     const response = await apiClient.get('/user/profile')
     return response.data
   },
-  
+
   updateProfile: async (profileData) => {
     const response = await apiClient.put('/user/profile', profileData)
     return response.data
   },
-  
+
   changePassword: async (passwordData) => {
     const response = await apiClient.post('/auth/change-password', passwordData)
     return response.data

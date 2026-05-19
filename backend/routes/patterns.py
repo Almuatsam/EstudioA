@@ -245,8 +245,8 @@ def create_pattern():
 def get_my_patterns():
     """Get current user's patterns"""
     try:
-        current_user_id = get_jwt_identity()
-        
+        current_user_id = int(get_jwt_identity())
+
         patterns = Pattern.query.filter_by(
             user_id=current_user_id,
             is_active=True
@@ -290,7 +290,7 @@ def get_my_patterns():
 def delete_pattern(pattern_id):
     """Soft-delete a pattern (designer can only delete their own)"""
     try:
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
         pattern = Pattern.query.get(pattern_id)
 
         if not pattern:

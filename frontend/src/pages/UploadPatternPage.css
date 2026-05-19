@@ -1,7 +1,7 @@
 .upload-page {
   min-height: 100vh;
   padding: var(--space-8) var(--space-6);
-  background: var(--pattern-soft);
+  background: transparent;
 }
 
 .upload-container {
@@ -11,14 +11,27 @@
 
 .upload-header {
   margin-bottom: var(--space-8);
+  color: #1f2a38;
+}
+
+.upload-header h1, .upload-header h2, .upload-header h3,
+.upload-header .h1, .upload-header .h2, .upload-header .h3,
+.upload-header p, .upload-header span {
+  color: #1f2a38;
 }
 
 .upload-section {
-  background: rgba(var(--powder-blue-rgb), 0.95);
-  border-radius: var(--radius-xl);
+  background: rgba(120, 140, 170, 0.25);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
   padding: var(--space-8);
   margin-bottom: var(--space-6);
-  box-shadow: var(--shadow-1);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .upload-form-grid {
@@ -39,41 +52,50 @@
 .upload-file-input {
   width: 100%;
   padding: var(--space-4);
-  background: var(--soft-sky);
-  border: 2px solid transparent;
+  background: rgba(100, 125, 155, 0.18);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
   border-radius: var(--radius-md);
   font-family: var(--font-family);
   font-size: var(--text-body);
-  color: var(--navy-dark);
+  color: #1f2a38;
   cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition: all var(--transition-fast);
 }
 
 .upload-file-input:focus {
   outline: none;
-  border-color: var(--steel-blue);
-  box-shadow: 0 0 0 4px rgba(var(--steel-blue-rgb), 0.2);
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .upload-file-helper {
   font-size: var(--text-caption);
-  color: var(--slate-blue);
+  color: #2e3e50;
   margin-top: var(--space-1);
 }
 
 .upload-file-selected {
   font-size: var(--text-body-sm);
-  color: var(--navy-dark);
+  color: #1f2a38;
   margin-top: var(--space-2);
   font-weight: var(--font-medium);
 }
 
 .upload-progress {
-  background: rgba(var(--powder-blue-rgb), 0.95);
-  border-radius: var(--radius-xl);
+  background: rgba(120, 140, 170, 0.25);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
   padding: var(--space-8);
   margin-bottom: var(--space-6);
-  box-shadow: var(--shadow-1);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: center;
 }
@@ -90,7 +112,7 @@
 
 .upload-notice {
   font-size: var(--text-body-sm);
-  color: var(--slate-blue);
+  color: #2e3e50;
   text-align: center;
 }
 
@@ -98,7 +120,6 @@ select.input {
   cursor: pointer;
 }
 
-/* ---- Tag chip editor ---- */
 .upload-tags-header {
   display: flex;
   align-items: center;
@@ -112,7 +133,7 @@ select.input {
   font-family: var(--font-family);
   font-size: var(--text-body-sm);
   font-weight: var(--font-medium);
-  color: var(--slate-blue);
+  color: #2e3e50;
   cursor: pointer;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
@@ -120,8 +141,8 @@ select.input {
 }
 
 .upload-tags-suggest-btn:hover:not(:disabled) {
-  background: rgba(var(--steel-blue-rgb), 0.12);
-  color: var(--navy-dark);
+  background: rgba(100, 125, 155, 0.20);
+  color: #1f2a38;
 }
 
 .upload-tags-suggest-btn:disabled {
@@ -136,16 +157,19 @@ select.input {
   gap: var(--space-2);
   min-height: 48px;
   padding: var(--space-2) var(--space-3);
-  background: var(--soft-sky);
-  border: 2px solid transparent;
+  background: rgba(100, 125, 155, 0.18);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
   border-radius: var(--radius-md);
   cursor: text;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .upload-tags-box:focus-within {
-  border-color: var(--steel-blue);
-  box-shadow: 0 0 0 4px rgba(var(--steel-blue-rgb), 0.2);
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .upload-tag-chip {
@@ -153,8 +177,9 @@ select.input {
   align-items: center;
   gap: 4px;
   padding: 4px 10px;
-  background: var(--slate-blue);
-  color: #f5f1e8;
+  background: rgba(70, 95, 120, 0.65);
+  color: #f0f4f8;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-pill);
   font-size: var(--text-body-sm);
   font-family: var(--font-family);
@@ -165,7 +190,7 @@ select.input {
 .upload-tag-chip-remove {
   background: none;
   border: none;
-  color: rgba(245, 241, 232, 0.75);
+  color: rgba(240, 244, 248, 0.75);
   cursor: pointer;
   font-size: 16px;
   line-height: 1;
@@ -176,7 +201,7 @@ select.input {
 }
 
 .upload-tag-chip-remove:hover {
-  color: #fff;
+  color: #f0f4f8;
 }
 
 .upload-tags-input {
@@ -186,7 +211,7 @@ select.input {
   background: transparent;
   font-family: var(--font-family);
   font-size: var(--text-body);
-  color: var(--navy-dark);
+  color: #1f2a38;
   outline: none;
   padding: 2px 0;
 }
@@ -195,7 +220,7 @@ select.input {
   .upload-form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .upload-actions {
     flex-direction: column;
   }

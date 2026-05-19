@@ -1,7 +1,7 @@
 .browse-page {
   min-height: 100vh;
   padding: var(--space-8) var(--space-6);
-  background: var(--pattern-soft);
+  background: transparent;
 }
 
 .browse-container {
@@ -14,6 +14,13 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-8);
+  color: #1f2a38;
+}
+
+.browse-header h1, .browse-header h2, .browse-header h3,
+.browse-header .h1, .browse-header .h2, .browse-header .h3,
+.browse-header p, .browse-header span {
+  color: #1f2a38;
 }
 
 .browse-content {
@@ -21,7 +28,6 @@
   gap: var(--space-8);
 }
 
-/* Sidebar */
 .browse-sidebar {
   width: 280px;
   flex-shrink: 0;
@@ -30,10 +36,16 @@
 .browse-filters {
   position: sticky;
   top: var(--space-4);
-  background: rgba(var(--powder-blue-rgb), 0.95);
+  background: rgba(120, 140, 170, 0.25);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   padding: var(--space-6);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-1);
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .browse-filter-group {
@@ -62,20 +74,19 @@
 }
 
 .browse-filter-option:hover {
-  background: rgba(var(--steel-blue-rgb), 0.1);
+  background: rgba(100, 125, 155, 0.22);
 }
 
 .browse-filter-option input[type="radio"] {
-  accent-color: var(--steel-blue);
+  accent-color: #2e3e50;
 }
 
 .browse-filter-option span {
   font-family: var(--font-family);
   font-size: var(--text-body-sm);
-  color: var(--navy-dark);
+  color: #1f2a38;
 }
 
-/* Main Content */
 .browse-main {
   flex: 1;
 }
@@ -97,20 +108,19 @@
   gap: var(--space-6);
 }
 
-/* Responsive */
 @media (max-width: 1024px) {
   .browse-content {
     flex-direction: column;
   }
-  
+
   .browse-sidebar {
     width: 100%;
   }
-  
+
   .browse-filters {
     position: static;
   }
-  
+
   .browse-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
@@ -122,7 +132,7 @@
     align-items: flex-start;
     gap: var(--space-2);
   }
-  
+
   .browse-grid {
     grid-template-columns: 1fr;
   }

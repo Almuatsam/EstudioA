@@ -19,12 +19,13 @@
 }
 
 body {
-  background: var(--pattern-soft); /* Use design system variable */
-  color: var(--navy-dark);
-  font-family: var(--font-family); /* Outfit from design system */
+  background: linear-gradient(135deg, #6c8aa3, #7b9bb3, #5f7f99);
+  background-attachment: fixed;
+  color: #1f2a38;
+  font-family: var(--font-family);
   margin: 0;
   padding: 0;
-  padding-top: 64px; /* offset for fixed navbar */
+  padding-top: 64px;
   width: 100%;
 }
 
@@ -35,7 +36,43 @@ body {
 
 /* Background utility - updated to new color */
 .bg-pattern-soft {
-  background: var(--pattern-soft);
+  background: transparent;
+}
+
+/* Text that sits directly on the dusty blue background (outside glass cards) */
+.browse-header *,
+.admin-header *,
+.designer-header *,
+.upload-header *,
+.home-hero .display-1,
+.home-hero .display-2,
+.home-hero .h1,
+.home-hero .h2,
+.home-hero p,
+.home-section > .container > p,
+.pattern-detail-back,
+.pattern-detail-recommendations > * {
+  color: inherit;
+}
+
+.browse-header h1, .browse-header h2, .browse-header h3,
+.browse-header .h1, .browse-header .h2, .browse-header .h3 {
+  color: #1f2a38;
+}
+
+.admin-header h1, .admin-header h2, .admin-header h3,
+.admin-header .h1, .admin-header .h2, .admin-header .h3 {
+  color: #1f2a38;
+}
+
+.designer-header h1, .designer-header h2, .designer-header h3,
+.designer-header .h1, .designer-header .h2, .designer-header .h3 {
+  color: #1f2a38;
+}
+
+.upload-header h1, .upload-header h2, .upload-header h3,
+.upload-header .h1, .upload-header .h2, .upload-header .h3 {
+  color: #1f2a38;
 }
 
 
@@ -138,16 +175,16 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--pattern-soft);
+  background: rgba(80, 110, 135, 0.25);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--powder-blue);
+  background: rgba(46, 62, 80, 0.35);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--steel-blue);
+  background: rgba(46, 62, 80, 0.55);
 }
 
 /* ==========================================

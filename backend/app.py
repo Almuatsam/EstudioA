@@ -2,6 +2,8 @@ from flask import Flask, send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from config import config
 from models import db
 import os
@@ -9,6 +11,7 @@ import os
 # Initialize extensions
 jwt = JWTManager()
 bcrypt = Bcrypt()
+limiter = Limiter(key_func=get_remote_address)
 
 def create_app(config_name='development'):
     """Application factory function"""
@@ -20,9 +23,10 @@ def create_app(config_name='development'):
     app.config.from_object(config[config_name])
     
     # Initialize extensions
-    CORS(app)
+    CORS(app, origins=app.config['CORS_ALLOWED_ORIGINS'], supports_credentials=True)
     jwt.init_app(app)
     bcrypt.init_app(app)
+    limiter.init_app(app)
     
     # Initialize database
     db.init_app(app)
@@ -35,9 +39,7 @@ def create_app(config_name='development'):
     # Serve uploaded files
     @app.route('/uploads/<path:filename>')
     def serve_upload(filename):
-        """Serve uploaded files with subdirectory support"""
         uploads_dir = os.path.join(os.path.dirname(__file__), 'uploads')
-        print(f"Serving file: {filename} from {uploads_dir}")  # Debug log
         return send_from_directory(uploads_dir, filename)
     
     # Import all models and create database tables
@@ -88,10 +90,8 @@ def create_app(config_name='development'):
 
 
 if __name__ == '__main__':
-    # Create the app
     app = create_app('development')
-    
-    # Run the app
+
     print("=" * 50)
     print("EstudioA Backend Server Starting...")
     print("=" * 50)
@@ -99,5 +99,9 @@ if __name__ == '__main__':
     print(f"Debug Mode: {app.config['DEBUG']}")
     print(f"Server running on: http://127.0.0.1:5000")
     print("=" * 50)
-    
-    app.run(host='0.0.0.0', port=5000, debug=True)
+
+    # host='127.0.0.1' — loopback only, never exposed to the network.
+    # debug is driven by config (DevelopmentConfig sets DEBUG=True) but
+    # the Werkzeug reloader/debugger is kept off here; use FLASK_DEBUG=1
+    # in the terminal if you need the reloader during development.
+    app.run(host='127.0.0.1', port=5000, debug=False)

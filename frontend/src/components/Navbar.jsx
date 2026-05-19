@@ -117,10 +117,7 @@ function Navbar() {
               )}
             </div>
           ) : (
-            <>
-              <Link to="/login" className="navbar-button navbar-button-secondary">Log in</Link>
-              <Link to="/register" className="navbar-button navbar-button-primary">Join Free</Link>
-            </>
+            <Link to="/login" className="navbar-button navbar-button-secondary">Log in</Link>
           )}
         </div>
 
@@ -166,7 +163,6 @@ function Navbar() {
           ) : (
             <div className="navbar-mobile-auth">
               <Link to="/login" className="navbar-button navbar-button-secondary navbar-button-mobile">Log in</Link>
-              <Link to="/register" className="navbar-button navbar-button-primary navbar-button-mobile">Join Free</Link>
             </div>
           )}
         </div>
