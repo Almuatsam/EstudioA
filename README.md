@@ -36,14 +36,22 @@ EstudioA is a full-stack web platform for sewing patterns with AI-powered search
 - Dashboard showing approval status for each upload
 
 ### Admin
-- Approve or reject submitted patterns
+- Approve or reject submitted patterns with detail modals
 - Manage user roles and accounts
 - View platform-wide statistics (patterns, users, downloads, favorites)
+
+### Security
+- Server-side password validation (length, complexity, sequential, repeated, common password blocklist)
+- Live frontend password strength feedback (rule-by-rule checklist + strength bar)
+- Rate limiting on auth endpoints
+- Protected routes (role-based access control)
+- JWT authentication with bcrypt password hashing
 
 ### Platform
 - Email notifications (admin on new upload, designer on approve/reject, users on new publish)
 - Role-based routing (user → account, designer → dashboard, admin → admin panel)
-- Responsive design with flip card pattern browsing
+- Responsive design with animated flip card pattern browsing
+- Glassmorphism design system with CSS design tokens
 
 ---
 
@@ -55,6 +63,7 @@ EstudioA is a full-stack web platform for sewing patterns with AI-powered search
 | Framework | Flask 3.1.0 |
 | Database | MySQL with SQLAlchemy 2.x |
 | Authentication | JWT (flask-jwt-extended) + bcrypt |
+| Rate Limiting | flask-limiter |
 | AI Search | spaCy 3.8.2 + RapidFuzz 3.10.1 |
 | OAuth | Google OAuth 2.0 (authorization code flow) |
 | Language | Python 3.12.8 |
@@ -64,6 +73,7 @@ EstudioA is a full-stack web platform for sewing patterns with AI-powered search
 |---|---|
 | Framework | React 19 |
 | Router | React Router v7 |
+| Animations | Framer Motion |
 | HTTP Client | Axios |
 | Build Tool | Vite |
 | Styling | Custom CSS design system |
@@ -76,55 +86,64 @@ EstudioA is a full-stack web platform for sewing patterns with AI-powered search
 EstudioA/
 ├── backend/
 │   ├── models/
-│   │   ├── user.py             # User accounts, roles, Google OAuth
-│   │   ├── pattern.py          # Patterns, categories, difficulty levels
-│   │   ├── favorites.py        # User favorites
-│   │   ├── upload.py           # Upload submission tracking
-│   │   └── history.py          # Download/view history
+│   │   ├── user.py               # User accounts, roles, Google OAuth
+│   │   ├── pattern.py            # Patterns, categories, difficulty levels
+│   │   ├── favorite.py           # User favorites
+│   │   ├── upload.py             # Upload submission tracking
+│   │   ├── download_history.py   # Per-user download records
+│   │   └── history.py            # View and interaction history
 │   ├── routes/
-│   │   ├── auth.py             # Register, login, Google OAuth, profile
-│   │   ├── patterns.py         # Browse, search, details, view tracking
-│   │   ├── upload.py           # File upload (PDF + image)
-│   │   ├── admin.py            # Approve/reject, user management, stats
-│   │   ├── user.py             # Profile get/update
-│   │   ├── favorites.py        # Add/remove/check favorites
-│   │   ├── downloads.py        # Download tracking and history
-│   │   └── recommendations.py  # Personal and pattern-based suggestions
+│   │   ├── auth.py               # Register, login, Google OAuth, profile
+│   │   ├── patterns.py           # Browse, search, details, view tracking
+│   │   ├── upload.py             # File upload (PDF + image)
+│   │   ├── admin.py              # Approve/reject, user management, stats
+│   │   ├── user.py               # Profile get/update
+│   │   ├── favorites.py          # Add/remove/check favorites
+│   │   ├── downloads.py          # Download tracking and history
+│   │   └── recommendations.py    # Personal and pattern-based suggestions
 │   ├── services/
-│   │   ├── search_service.py   # Fuzzy + semantic search
-│   │   ├── tag_service.py      # Auto-tag generation
-│   │   └── email_service.py    # SMTP notifications
-│   ├── app.py                  # Application factory
-│   ├── config.py               # Configuration (reads from .env)
-│   ├── seed.py                 # Database seeder
-│   ├── .env.example            # Environment variable template
+│   │   ├── search_service.py     # Fuzzy + semantic search
+│   │   ├── recommendation_service.py  # Content-based + popular recommendations
+│   │   ├── password_service.py   # Password validation rules and blocklist
+│   │   ├── tag_service.py        # Auto-tag generation
+│   │   └── email_service.py      # SMTP notifications
+│   ├── app.py                    # Application factory
+│   ├── config.py                 # Configuration (reads from .env)
+│   ├── seed.py                   # Database seeder
+│   ├── .env.example              # Environment variable template
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
 │   │   ├── context/
-│   │   │   └── AuthContext.jsx       # Global auth state
+│   │   │   └── AuthContext.jsx         # Global auth state
 │   │   ├── components/
 │   │   │   ├── Navbar.jsx / Footer.jsx
-│   │   │   ├── FlipCard.jsx          # Pattern card with favorites
-│   │   │   ├── Button.jsx / Input.jsx
-│   │   │   ├── Toast.jsx             # Self-dismissing notifications
-│   │   │   ├── LoadingSpinner.jsx
+│   │   │   ├── FlipCard.jsx            # Pattern card with favorites
+│   │   │   ├── PasswordStrength.jsx    # Live password rule checklist + strength bar
+│   │   │   ├── PasswordChangeModal.jsx # Change password with live validation
+│   │   │   ├── ProtectedRoute.jsx      # Role-based route guard
 │   │   │   ├── ConfirmationModal.jsx
+│   │   │   ├── BlurText.jsx            # Animated text reveal
+│   │   │   ├── Button.jsx / Input.jsx
+│   │   │   ├── Toast.jsx               # Self-dismissing notifications
+│   │   │   ├── LoadingSpinner.jsx
 │   │   │   └── Icons.jsx
 │   │   ├── pages/
 │   │   │   ├── HomePage.jsx
 │   │   │   ├── BrowsePage.jsx
-│   │   │   ├── LoginPage.jsx         # Login, register, Google OAuth
-│   │   │   ├── AuthCallbackPage.jsx  # Google OAuth callback handler
+│   │   │   ├── LoginPage.jsx           # Login, register, Google OAuth
+│   │   │   ├── AuthCallbackPage.jsx    # Google OAuth callback handler
 │   │   │   ├── PatternDetailPage.jsx
-│   │   │   ├── UploadPatternPage.jsx # Upload with auto-tag suggestions
+│   │   │   ├── UploadPatternPage.jsx   # Upload with auto-tag suggestions
 │   │   │   ├── UserAccountPage.jsx
 │   │   │   ├── DesignerDashboardPage.jsx
 │   │   │   └── AdminPage.jsx
 │   │   ├── services/
-│   │   │   └── api.js                # Axios instance + all API namespaces
+│   │   │   └── api.js                  # Axios instance + all API namespaces
+│   │   ├── utils/
+│   │   │   └── validatePassword.js     # Client-side password validation rules
 │   │   └── App.jsx
-│   ├── .env.example                  # Frontend environment template
+│   ├── .env.example                    # Frontend environment template
 │   └── index.html
 └── README.md
 ```
@@ -243,6 +262,19 @@ VITE_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 | DELETE | `/<pattern_id>` | Remove from favorites |
 | GET | `/check/<pattern_id>` | Check if favorited |
 
+### Downloads — `/api/downloads`
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/<pattern_id>` | Record a download |
+| GET | `/history` | User's download history |
+
+### Recommendations — `/api/recommendations`
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Personalized recommendations for current user |
+| GET | `/pattern/<id>` | Similar patterns to a given pattern |
+| GET | `/popular` | Most downloaded and viewed patterns |
+
 ### Admin — `/api/admin`
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -277,8 +309,10 @@ This project demonstrates:
 - RESTful API design and implementation
 - Relational database design with SQLAlchemy ORM
 - JWT authentication and role-based access control
+- Password security (complexity rules, sequential/repeated detection, common password blocklist)
+- API rate limiting and route protection
 - Third-party OAuth integration (Google)
-- AI/ML integration (NLP search, tag generation)
+- AI/ML integration (NLP search, content-based recommendations, tag generation)
 - Email notification systems
 - Secure secret management with environment variables
 
@@ -292,4 +326,4 @@ This project demonstrates:
 
 ---
 
-*Last updated: April 2026*
+*Last updated: May 2026*

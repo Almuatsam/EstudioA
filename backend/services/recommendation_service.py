@@ -2,167 +2,122 @@ import spacy
 from models.pattern import Pattern
 from models.history import History
 from models import db
-from sqlalchemy import func
-
 
 nlp = spacy.load("en_core_web_sm")
+
+
 def calculate_pattern_similarity(pattern1, pattern2):
-    
-    # Score 1: Category Match 
+    """
+    Score similarity between two patterns across four dimensions:
+    category, difficulty, shared tags (Jaccard), and description semantics.
+    Returns a weighted float in [0.0, 1.0].
+    """
     category_score = 1.0 if pattern1.category_id == pattern2.category_id else 0.0
-    
-    # Score 2: Difficulty Match 
     difficulty_score = 1.0 if pattern1.difficulty_id == pattern2.difficulty_id else 0.0
-    
-    # Score 3: Tag Similarity 
+
     tags1 = set(pattern1.get_tags_list())
     tags2 = set(pattern2.get_tags_list())
-    
     if tags1 and tags2:
         # Jaccard similarity: intersection / union
-        common_tags = tags1.intersection(tags2)
-        all_tags = tags1.union(tags2)
-        tag_score = len(common_tags) / len(all_tags) if all_tags else 0.0
+        tag_score = len(tags1 & tags2) / len(tags1 | tags2)
     else:
         tag_score = 0.0
-    
-    # Score 4: Description Similarity 
-    desc1 = pattern1.description if pattern1.description else ""
-    desc2 = pattern2.description if pattern2.description else ""
-    
-    if desc1 and desc2:
-        doc1 = nlp(desc1)
-        doc2 = nlp(desc2)
-        semantic_score = doc1.similarity(doc2)
-    else:
-        semantic_score = 0.0
-    
-    # Combine all scores with weights
-    total_score = (
+
+    desc1 = pattern1.description or ""
+    desc2 = pattern2.description or ""
+    semantic_score = nlp(desc1).similarity(nlp(desc2)) if desc1 and desc2 else 0.0
+
+    return (
         0.3 * category_score +
         0.1 * difficulty_score +
         0.3 * tag_score +
         0.3 * semantic_score
     )
-    
-    return total_score
+
 
 def get_pattern_recommendations(pattern_id, limit=10, min_score=0.3):
-    
-    # Get the base pattern
+    """Return patterns most similar to the given pattern, sorted by similarity score."""
     base_pattern = Pattern.query.get(pattern_id)
-    
     if not base_pattern:
         return []
-    
-    # Get all other approved patterns 
-    all_patterns = Pattern.query.filter(
+
+    candidates = Pattern.query.filter(
         Pattern.is_approved == True,
         Pattern.is_active == True,
         Pattern.id != pattern_id
     ).all()
-    
-    # Calculate similarity for each pattern
+
     recommendations = []
-    
-    for pattern in all_patterns:
-        similarity_score = calculate_pattern_similarity(base_pattern, pattern)
-        
-        # Only include if score is above minimum
-        if similarity_score >= min_score:
+    for pattern in candidates:
+        score = calculate_pattern_similarity(base_pattern, pattern)
+        if score >= min_score:
             recommendations.append({
                 'pattern': pattern,
-                'score': round(similarity_score * 100, 2),  # Convert to percentage
+                'score': round(score * 100, 2),
                 'recommendation_type': 'content_based'
             })
-    
-    # Sort by score (highest first)
+
     recommendations.sort(key=lambda x: x['score'], reverse=True)
-    
-    # Return top N recommendations
     return recommendations[:limit]
 
+
 def get_user_recommendations(user_id, limit=10):
-    
-    
-    # Get user's most recent history 
-    user_history = History.query.filter_by(user_id=user_id).order_by(
-    History.created_at.desc()
-    ).limit(20).all()
-    
+    """
+    Build personalized recommendations from the user's view history.
+    Aggregates content-based scores across recently viewed patterns.
+    Falls back to popular patterns when the user has no history.
+    """
+    user_history = History.query.filter_by(user_id=user_id)\
+        .order_by(History.created_at.desc())\
+        .limit(20).all()
+
     if not user_history:
-        # No history - return popular patterns instead
         return get_popular_patterns(limit)
-    
-    # Get pattern IDs from history
-    viewed_pattern_ids = [h.pattern_id for h in user_history]
-    
-    # Collect all recommendations from viewed patterns
-    all_recommendations = {}
-    
-    for pattern_id in viewed_pattern_ids:
-        # Get recommendations for each pattern user viewed
-        recs = get_pattern_recommendations(pattern_id, limit=5, min_score=0.4)
-        
-        for rec in recs:
-            rec_pattern_id = rec['pattern'].id
-            
-            # Skip if user already viewed this pattern
-            if rec_pattern_id in viewed_pattern_ids:
+
+    viewed_ids = {h.pattern_id for h in user_history}
+    aggregated = {}
+
+    for pattern_id in viewed_ids:
+        for rec in get_pattern_recommendations(pattern_id, limit=5, min_score=0.4):
+            pid = rec['pattern'].id
+            if pid in viewed_ids:
                 continue
-            
-            # Accumulate scores if pattern appears multiple times
-            if rec_pattern_id in all_recommendations:
-                all_recommendations[rec_pattern_id]['score'] += rec['score']
-                all_recommendations[rec_pattern_id]['count'] += 1
+            if pid in aggregated:
+                aggregated[pid]['score'] += rec['score']
+                aggregated[pid]['count'] += 1
             else:
-                all_recommendations[rec_pattern_id] = {
+                aggregated[pid] = {
                     'pattern': rec['pattern'],
                     'score': rec['score'],
-                    'count': 1,
-                    'recommendation_type': 'personalized'
+                    'count': 1
                 }
-    
-    # Calculate average scores
-    final_recommendations = []
-    for rec_id, rec_data in all_recommendations.items():
-        avg_score = rec_data['score'] / rec_data['count']
-        final_recommendations.append({
-            'pattern': rec_data['pattern'],
-            'score': round(avg_score, 2),
+
+    results = [
+        {
+            'pattern': data['pattern'],
+            'score': round(data['score'] / data['count'], 2),
             'recommendation_type': 'personalized',
-            'based_on': rec_data['count']  # How many user patterns led to this
-        })
-    
-    # Sort by score
-    final_recommendations.sort(key=lambda x: x['score'], reverse=True)
-    
-    # Return top N
-    return final_recommendations[:limit]
+            'based_on': data['count']
+        }
+        for data in aggregated.values()
+    ]
+
+    results.sort(key=lambda x: x['score'], reverse=True)
+    return results[:limit]
+
 
 def get_popular_patterns(limit=10):
-    
-    # Get all approved patterns
-    patterns = Pattern.query.filter_by(
-        is_approved=True,
-        is_active=True
-    ).all()
-    
-    popular_patterns = []
-    
-    for pattern in patterns:
-        # Calculate popularity score
-        # Downloads are worth more than views (2:1 ratio)
-        popularity_score = (pattern.download_count * 2) + pattern.view_count
-        
-        popular_patterns.append({
-            'pattern': pattern,
-            'score': popularity_score,
+    """Rank patterns by weighted popularity: downloads count double views."""
+    patterns = Pattern.query.filter_by(is_approved=True, is_active=True).all()
+
+    ranked = [
+        {
+            'pattern': p,
+            'score': (p.download_count * 2) + p.view_count,
             'recommendation_type': 'popular'
-        })
-    
-    # Sort by popularity (highest first)
-    popular_patterns.sort(key=lambda x: x['score'], reverse=True)
-    
-    # Return top N
-    return popular_patterns[:limit]
+        }
+        for p in patterns
+    ]
+
+    ranked.sort(key=lambda x: x['score'], reverse=True)
+    return ranked[:limit]

@@ -8,53 +8,41 @@ from config import config
 from models import db
 import os
 
-# Initialize extensions
 jwt = JWTManager()
 bcrypt = Bcrypt()
 limiter = Limiter(key_func=get_remote_address)
 
+
 def create_app(config_name='development'):
-    """Application factory function"""
-    
-    # Initialize Flask app
     app = Flask(__name__)
-    
-    # Load configuration
     app.config.from_object(config[config_name])
-    
-    # Initialize extensions
+
     CORS(app, origins=app.config['CORS_ALLOWED_ORIGINS'], supports_credentials=True)
     jwt.init_app(app)
     bcrypt.init_app(app)
     limiter.init_app(app)
-    
-    # Initialize database
     db.init_app(app)
-    
-    # Create upload folder if it doesn't exist
+
     upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads')
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
-    
-    # Serve uploaded files
+
     @app.route('/uploads/<path:filename>')
     def serve_upload(filename):
         uploads_dir = os.path.join(os.path.dirname(__file__), 'uploads')
         return send_from_directory(uploads_dir, filename)
-    
-    # Import all models and create database tables
+
     with app.app_context():
         from models.user import User
         from models.pattern import Pattern, Category, DifficultyLevel
         from models.upload import Upload
         from models.history import History
-        from models.favorite import Favorite  
-        from models.download_history import DownloadHistory 
-        
+        from models.favorite import Favorite
+        from models.download_history import DownloadHistory
+
         db.create_all()
         print("Database tables created successfully!")
-    
-    # Register blueprints (routes)
+
     from routes.auth import auth_bp
     from routes.patterns import patterns_bp
     from routes.admin import admin_bp
@@ -63,17 +51,16 @@ def create_app(config_name='development'):
     from routes.favorites import favorites_bp
     from routes.downloads import downloads_bp
     from routes.user import user_bp
-    
+
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(patterns_bp, url_prefix='/api/patterns')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
     app.register_blueprint(upload_bp, url_prefix='/api/upload')
     app.register_blueprint(recommendations_bp, url_prefix='/api/recommendations')
-    app.register_blueprint(favorites_bp, url_prefix='/api/favorites')  
-    app.register_blueprint(downloads_bp, url_prefix='/api/downloads')  
-    app.register_blueprint(user_bp, url_prefix='/api/user')  
+    app.register_blueprint(favorites_bp, url_prefix='/api/favorites')
+    app.register_blueprint(downloads_bp, url_prefix='/api/downloads')
+    app.register_blueprint(user_bp, url_prefix='/api/user')
 
-    # Health check route
     @app.route('/')
     def index():
         return {
@@ -81,11 +68,11 @@ def create_app(config_name='development'):
             'status': 'healthy',
             'version': '1.0.0'
         }
-    
+
     @app.route('/health')
     def health():
         return {'status': 'healthy'}, 200
-    
+
     return app
 
 
@@ -101,7 +88,6 @@ if __name__ == '__main__':
     print("=" * 50)
 
     # host='127.0.0.1' — loopback only, never exposed to the network.
-    # debug is driven by config (DevelopmentConfig sets DEBUG=True) but
-    # the Werkzeug reloader/debugger is kept off here; use FLASK_DEBUG=1
-    # in the terminal if you need the reloader during development.
+    # Werkzeug reloader is disabled here; use FLASK_DEBUG=1 in the terminal
+    # if you need hot-reload during development.
     app.run(host='127.0.0.1', port=5000, debug=False)

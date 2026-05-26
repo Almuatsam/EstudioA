@@ -14,13 +14,13 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-8);
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .browse-header h1, .browse-header h2, .browse-header h3,
 .browse-header .h1, .browse-header .h2, .browse-header .h3,
 .browse-header p, .browse-header span {
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .browse-content {
@@ -84,7 +84,7 @@
 .browse-filter-option span {
   font-family: var(--font-family);
   font-size: var(--text-body-sm);
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .browse-main {

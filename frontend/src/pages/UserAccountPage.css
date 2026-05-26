@@ -52,14 +52,14 @@
   font-family: var(--font-family);
   font-size: var(--text-h4);
   font-weight: var(--font-bold);
-  color: #2e3e50;
+  color: var(--color-text-secondary);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .account-tab:hover {
   background: rgba(120, 145, 175, 0.30);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   border-color: rgba(255, 255, 255, 0.25);
 }
 
@@ -177,7 +177,7 @@
 
 .account-pattern-image span {
   font-size: 64px;
-  color: #2e3e50;
+  color: var(--color-text-secondary);
 }
 
 .account-pattern-content {

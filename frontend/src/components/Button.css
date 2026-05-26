@@ -42,7 +42,7 @@
 /* Secondary Button */
 .btn-secondary {
   background: rgba(100, 125, 155, 0.22);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   border: 1.5px solid rgba(46, 62, 80, 0.35);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(8px);
@@ -52,7 +52,7 @@
 .btn-secondary:hover:not(:disabled) {
   background: rgba(120, 145, 175, 0.32);
   border-color: rgba(46, 62, 80, 0.55);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   transform: translateY(-2px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 4px 12px rgba(0, 0, 0, 0.14);
 }
@@ -65,7 +65,7 @@
 /* Icon Button */
 .btn-icon {
   background: rgba(100, 125, 155, 0.20);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   padding: 0;
   aspect-ratio: 1;
   border: 1px solid rgba(255, 255, 255, 0.20);

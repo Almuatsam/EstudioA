@@ -15,29 +15,29 @@
 .admin-header {
   max-width: 1400px;
   margin: 0 auto var(--space-10);
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .admin-header h1, .admin-header h2, .admin-header h3,
 .admin-header .h1, .admin-header .h2, .admin-header .h3,
 .admin-header p, .admin-header span {
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .admin-section > h2, .admin-section > h3,
 .admin-section > .h2, .admin-section > .h3 {
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .admin-stats-section {
   max-width: 1400px;
   margin: 0 auto var(--space-12);
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .admin-stats-section h2, .admin-stats-section h3,
 .admin-stats-section .h2, .admin-stats-section .h3 {
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .admin-stats-grid {
@@ -84,13 +84,13 @@
   font-family: var(--font-family);
   font-size: var(--text-display-2);
   font-weight: var(--font-bold);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   line-height: 1;
 }
 
 .admin-stat-label {
   font-size: var(--text-body-sm);
-  color: #2e3e50;
+  color: var(--color-text-secondary);
   margin-top: var(--space-2);
 }
 
@@ -142,7 +142,7 @@
   font-family: var(--font-family);
   font-size: var(--text-body-sm);
   font-weight: var(--font-bold);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -151,7 +151,7 @@
   padding: var(--space-4);
   font-family: var(--font-family);
   font-size: var(--text-body);
-  color: #2e3e50;
+  color: var(--color-text-secondary);
   border-bottom: 1px solid rgba(46, 62, 80, 0.12);
 }
 
@@ -190,7 +190,7 @@
 
 .admin-table-pattern-title {
   font-weight: var(--font-medium);
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .admin-table-actions {
@@ -215,13 +215,13 @@
 
 .admin-role-designer {
   background: rgba(120, 140, 170, 0.35);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   border: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .admin-role-user {
   background: rgba(160, 185, 210, 0.40);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   border: 1px solid rgba(255, 255, 255, 0.20);
 }
 
@@ -284,7 +284,7 @@
   border: none;
   font-size: 1.25rem;
   cursor: pointer;
-  color: #2e3e50;
+  color: var(--color-text-secondary);
   padding: var(--space-2);
   border-radius: var(--radius-md);
   line-height: 1;

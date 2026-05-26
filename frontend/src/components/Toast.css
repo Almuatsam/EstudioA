@@ -44,7 +44,7 @@
 
 .toast-message {
   flex: 1;
-  font-size: 15px;
+  font-size: var(--text-body); /* 16px — was 15px (off-scale) */
 }
 
 @keyframes toast-slide-in {

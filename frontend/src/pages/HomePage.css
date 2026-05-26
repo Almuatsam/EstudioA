@@ -11,7 +11,7 @@
 }
 
 .home-hero-accent {
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .home-hero .display-1,
@@ -19,24 +19,24 @@
 .home-hero .h1,
 .home-hero .h2,
 .home-hero .h3 {
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .home-hero p,
 .home-hero .body-large,
 .home-hero .body {
-  color: #2e3e50;
+  color: var(--color-text-secondary);
 }
 
 .home-section .h2,
 .home-section .h3,
 .home-section .h1 {
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .home-section .body-large,
 .home-section p {
-  color: #2e3e50;
+  color: var(--color-text-secondary);
 }
 
 .home-search-form {
@@ -115,7 +115,7 @@
   font-family: var(--font-family);
   font-size: var(--text-h4);
   font-weight: var(--font-bold);
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .home-trending {
@@ -161,7 +161,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2e3e50;
+  color: var(--color-text-secondary);
   overflow: hidden;
 }
 
@@ -175,7 +175,7 @@
   align-items: center;
   margin-top: var(--space-3);
   font-size: var(--text-body-sm);
-  color: #2e3e50;
+  color: var(--color-text-secondary);
 }
 
 .home-trending-downloads {

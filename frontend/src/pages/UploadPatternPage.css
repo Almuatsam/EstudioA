@@ -11,13 +11,13 @@
 
 .upload-header {
   margin-bottom: var(--space-8);
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .upload-header h1, .upload-header h2, .upload-header h3,
 .upload-header .h1, .upload-header .h2, .upload-header .h3,
 .upload-header p, .upload-header span {
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .upload-section {
@@ -57,7 +57,7 @@
   border-radius: var(--radius-md);
   font-family: var(--font-family);
   font-size: var(--text-body);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   cursor: pointer;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.20);
   backdrop-filter: blur(8px);
@@ -68,18 +68,19 @@
 .upload-file-input:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.45);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  /* Consistent with Input.css double-ring focus */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 0 0 4px var(--steel-blue), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .upload-file-helper {
   font-size: var(--text-caption);
-  color: #2e3e50;
+  color: var(--color-text-secondary);
   margin-top: var(--space-1);
 }
 
 .upload-file-selected {
   font-size: var(--text-body-sm);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   margin-top: var(--space-2);
   font-weight: var(--font-medium);
 }
@@ -112,7 +113,7 @@
 
 .upload-notice {
   font-size: var(--text-body-sm);
-  color: #2e3e50;
+  color: var(--color-text-secondary);
   text-align: center;
 }
 
@@ -133,7 +134,7 @@ select.input {
   font-family: var(--font-family);
   font-size: var(--text-body-sm);
   font-weight: var(--font-medium);
-  color: #2e3e50;
+  color: var(--color-text-secondary);
   cursor: pointer;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
@@ -142,7 +143,7 @@ select.input {
 
 .upload-tags-suggest-btn:hover:not(:disabled) {
   background: rgba(100, 125, 155, 0.20);
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .upload-tags-suggest-btn:disabled {
@@ -169,7 +170,8 @@ select.input {
 
 .upload-tags-box:focus-within {
   border-color: rgba(255, 255, 255, 0.45);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  /* Consistent double-ring focus — matches Input.css */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 0 0 4px var(--steel-blue), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .upload-tag-chip {
@@ -211,7 +213,7 @@ select.input {
   background: transparent;
   font-family: var(--font-family);
   font-size: var(--text-body);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   outline: none;
   padding: 2px 0;
 }

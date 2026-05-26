@@ -21,7 +21,7 @@
 body {
   background: linear-gradient(135deg, #6c8aa3, #7b9bb3, #5f7f99);
   background-attachment: fixed;
-  color: #1f2a38;
+  color: var(--color-text-primary);
   font-family: var(--font-family);
   margin: 0;
   padding: 0;
@@ -57,22 +57,42 @@ body {
 
 .browse-header h1, .browse-header h2, .browse-header h3,
 .browse-header .h1, .browse-header .h2, .browse-header .h3 {
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .admin-header h1, .admin-header h2, .admin-header h3,
 .admin-header .h1, .admin-header .h2, .admin-header .h3 {
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .designer-header h1, .designer-header h2, .designer-header h3,
 .designer-header .h1, .designer-header .h2, .designer-header .h3 {
-  color: #1f2a38;
+  color: var(--color-text-primary);
 }
 
 .upload-header h1, .upload-header h2, .upload-header h3,
 .upload-header .h1, .upload-header .h2, .upload-header .h3 {
-  color: #1f2a38;
+  color: var(--color-text-primary);
+}
+
+/* ==========================================
+   Prose Link Affordance
+   Inline links inside body content get
+   underline + brand color for accessibility.
+   Navigation/card links keep text-decoration:none.
+   ========================================== */
+.prose a,
+.body-text a {
+  color: var(--steel-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color var(--transition-fast), text-decoration-color var(--transition-fast);
+}
+
+.prose a:hover,
+.body-text a:hover {
+  color: var(--navy-dark);
 }
 
 

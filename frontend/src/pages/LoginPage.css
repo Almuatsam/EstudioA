@@ -62,7 +62,7 @@
   font-family: var(--font-family);
   font-size: var(--text-body);
   font-weight: var(--font-medium);
-  color: #2e3e50;
+  color: var(--color-text-secondary);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -127,13 +127,13 @@
 .login-role-title {
   font-family: var(--font-family);
   font-weight: var(--font-bold);
-  color: #1f2a38;
+  color: var(--color-text-primary);
   margin-bottom: var(--space-1);
 }
 
 .login-role-desc {
   font-size: var(--text-body-sm);
-  color: #2e3e50;
+  color: var(--color-text-secondary);
 }
 
 .login-divider {
@@ -141,7 +141,7 @@
   align-items: center;
   gap: var(--space-3);
   margin: var(--space-6) 0 var(--space-4);
-  color: #2e3e50;
+  color: var(--color-text-secondary);
   font-size: var(--text-body-sm);
 }
 
@@ -199,12 +199,13 @@
 .login-link {
   background: none;
   border: none;
-  color: #2e3e50;
+  color: var(--color-text-primary);
   font-family: var(--font-family);
   font-size: var(--text-body-sm);
   font-weight: var(--font-medium);
   cursor: pointer;
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .login-link:hover {

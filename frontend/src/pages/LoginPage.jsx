@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import PasswordStrength from '../components/PasswordStrength'
+import { isPasswordValid } from '../utils/validatePassword'
 import logoOutline from '../assets/logo-outline.svg'
 import './LoginPage.css'
 
@@ -60,10 +62,15 @@ function LoginPage() {
   const handleRegister = async (e) => {
     e.preventDefault()
     setError('')
-    setLoading(true)
 
+    if (!isPasswordValid(registerData.password)) {
+      setError('Please fix the password issues shown below before continuing.')
+      return
+    }
+
+    setLoading(true)
     const result = await register(registerData)
-    
+
     if (!result.success) {
       setError(result.error)
       setLoading(false)
@@ -181,6 +188,7 @@ function LoginPage() {
               onChange={(e) => setRegisterData({...registerData, password: e.target.value})}
               placeholder="Create a password"
             />
+            <PasswordStrength password={registerData.password} />
 
             {/* Role Selection */}
             <div className="login-role-selection">

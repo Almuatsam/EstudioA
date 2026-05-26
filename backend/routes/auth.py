@@ -9,6 +9,7 @@ from app import bcrypt, limiter
 from datetime import datetime
 import requests as http_requests
 import re
+from services.password_service import validate_password
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -39,6 +40,10 @@ def register():
 
         if User.query.filter_by(email=data['email']).first():
             return jsonify({'error': 'Email already exists'}), 400
+
+        pw_errors = validate_password(data['password'])
+        if pw_errors:
+            return jsonify({'error': pw_errors[0], 'validation_errors': pw_errors}), 400
 
         hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
 
@@ -261,8 +266,9 @@ def change_password():
         if not bcrypt.check_password_hash(user.password_hash, data['current_password']):
             return jsonify({'error': 'Current password is incorrect'}), 401
 
-        if len(data['new_password']) < 8:
-            return jsonify({'error': 'New password must be at least 8 characters'}), 400
+        pw_errors = validate_password(data['new_password'])
+        if pw_errors:
+            return jsonify({'error': pw_errors[0], 'validation_errors': pw_errors}), 400
 
         user.password_hash = bcrypt.generate_password_hash(data['new_password']).decode('utf-8')
         db.session.commit()

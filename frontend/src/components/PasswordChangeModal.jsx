@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { userAPI } from '../services/api'
+import PasswordStrength from './PasswordStrength'
+import { isPasswordValid } from '../utils/validatePassword'
 import './PasswordChangeModal.css'
 
 function PasswordChangeModal({ isOpen, onClose, onSuccess, onError }) {
@@ -14,12 +16,12 @@ function PasswordChangeModal({ isOpen, onClose, onSuccess, onError }) {
     e.preventDefault()
 
     if (formData.new_password !== formData.confirm_password) {
-      onError('New passwords do not match')
+      onError('New passwords do not match.')
       return
     }
 
-    if (formData.new_password.length < 8) {
-      onError('Password must be at least 8 characters')
+    if (!isPasswordValid(formData.new_password)) {
+      onError('Your new password does not meet all security requirements.')
       return
     }
 
@@ -29,12 +31,12 @@ function PasswordChangeModal({ isOpen, onClose, onSuccess, onError }) {
         current_password: formData.current_password,
         new_password: formData.new_password
       })
-      
+
       onSuccess('Password changed successfully!')
       setFormData({ current_password: '', new_password: '', confirm_password: '' })
       onClose()
     } catch (error) {
-      onError(error.response?.data?.error || 'Failed to change password')
+      onError(error.response?.data?.error || 'Failed to change password.')
     } finally {
       setLoading(false)
     }
@@ -45,10 +47,10 @@ function PasswordChangeModal({ isOpen, onClose, onSuccess, onError }) {
   return (
     <div className="password-modal-backdrop" onClick={onClose}>
       <div className="password-modal-container" onClick={(e) => e.stopPropagation()}>
-        
+
         <div className="password-modal-header">
           <h3 className="password-modal-title">Change Password</h3>
-          <button onClick={onClose} className="password-modal-close">✕</button>
+          <button onClick={onClose} className="password-modal-close" aria-label="Close">✕</button>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -58,8 +60,9 @@ function PasswordChangeModal({ isOpen, onClose, onSuccess, onError }) {
               type="password"
               required
               value={formData.current_password}
-              onChange={(e) => setFormData({...formData, current_password: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, current_password: e.target.value })}
               className="password-modal-input"
+              autoComplete="current-password"
             />
           </div>
 
@@ -69,9 +72,12 @@ function PasswordChangeModal({ isOpen, onClose, onSuccess, onError }) {
               type="password"
               required
               value={formData.new_password}
-              onChange={(e) => setFormData({...formData, new_password: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, new_password: e.target.value })}
               className="password-modal-input"
+              autoComplete="new-password"
             />
+            {/* Live strength feedback — replaces the old static list */}
+            <PasswordStrength password={formData.new_password} />
           </div>
 
           <div className="password-modal-field">
@@ -80,29 +86,33 @@ function PasswordChangeModal({ isOpen, onClose, onSuccess, onError }) {
               type="password"
               required
               value={formData.confirm_password}
-              onChange={(e) => setFormData({...formData, confirm_password: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
               className="password-modal-input"
+              autoComplete="new-password"
             />
-          </div>
-
-          <div className="password-modal-requirements">
-            <p className="password-modal-requirements-title">Password Requirements:</p>
-            <ul className="password-modal-requirements-list">
-              <li>• At least 8 characters</li>
-              <li>• Contains uppercase & lowercase letters</li>
-              <li>• Contains at least one number</li>
-            </ul>
+            {formData.confirm_password && formData.new_password !== formData.confirm_password && (
+              <p className="password-modal-mismatch">Passwords do not match.</p>
+            )}
           </div>
 
           <div className="password-modal-actions">
-            <button type="button" onClick={onClose} className="password-modal-btn password-modal-btn-secondary">
+            <button
+              type="button"
+              onClick={onClose}
+              className="password-modal-btn password-modal-btn-secondary"
+            >
               Cancel
             </button>
-            <button type="submit" disabled={loading} className="password-modal-btn password-modal-btn-primary">
-              {loading ? 'Changing...' : 'Change Password'}
+            <button
+              type="submit"
+              disabled={loading}
+              className="password-modal-btn password-modal-btn-primary"
+            >
+              {loading ? 'Changing…' : 'Change Password'}
             </button>
           </div>
         </form>
+
       </div>
     </div>
   )
