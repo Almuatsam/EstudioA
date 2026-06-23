@@ -51,8 +51,8 @@ Thumbs.db
 # Node modules
 node_modules/
 
-# User-uploaded files
-backend/uploads/
+# User-uploaded files - committed for production deployment
+# backend/uploads/
 
 # Claude Code local settings
 .claude/
