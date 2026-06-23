@@ -8,6 +8,10 @@ import { patternsAPI, recommendationsAPI, favoritesAPI } from '../services/api'
 import { PatternPlaceholder, Heart, HeartSolid } from '../components/Icons'
 import './PatternDetailPage.css'
 
+const BACKEND_URL = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace('/api', '')
+  : 'http://127.0.0.1:5000'
+
 // Module-level set persists across StrictMode remounts, preventing double view counts
 const viewedPatterns = new Set()
 
@@ -104,7 +108,7 @@ function PatternDetailPage() {
 
       // Single request: backend records download AND returns the PDF
       const response = await fetch(
-        `http://127.0.0.1:5000/api/downloads/file/${pattern.id}`,
+        `${BACKEND_URL}/api/downloads/file/${pattern.id}`,
         { headers }
       )
 
@@ -172,7 +176,7 @@ function PatternDetailPage() {
             <div className="pattern-detail-image">
               {pattern.preview_image ? (
                 <img 
-                  src={`http://127.0.0.1:5000${pattern.preview_image}`}
+                  src={`${BACKEND_URL}${pattern.preview_image}`}
                   alt={pattern.title}
                 />
               ) : (
@@ -291,7 +295,7 @@ function PatternDetailPage() {
                   <div className="pattern-detail-recommendation-image">
                     {rec.preview_image ? (
                       <img 
-                        src={`http://127.0.0.1:5000${rec.preview_image}`}
+                        src={`${BACKEND_URL}${rec.preview_image}`}
                         alt={rec.title}
                       />
                     ) : (

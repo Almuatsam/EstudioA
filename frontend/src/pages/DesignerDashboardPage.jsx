@@ -8,6 +8,10 @@ import Toast from '../components/Toast'
 import { PatternPlaceholder, BadgeCheck, Clock, Download, Heart } from '../components/Icons'
 import './DesignerDashboardPage.css'
 
+const BACKEND_URL = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace('/api', '')
+  : 'http://127.0.0.1:5000'
+
 function DesignerDashboardPage() {
   const { user, isAuthenticated } = useAuth()
   const navigate = useNavigate()
@@ -185,7 +189,7 @@ function DesignerDashboardPage() {
                         <div className="designer-table-pattern-image">
                           {pattern.preview_image ? (
                             <img 
-                              src={`http://127.0.0.1:5000${pattern.preview_image}`}
+                              src={`${BACKEND_URL}${pattern.preview_image}`}
                               alt={pattern.title}
                             />
                           ) : (

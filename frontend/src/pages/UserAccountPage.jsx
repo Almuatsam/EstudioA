@@ -12,6 +12,10 @@ import Input from '../components/Input'
 import { PatternPlaceholder, Download, Heart } from '../components/Icons'
 import './UserAccountPage.css'
 
+const BACKEND_URL = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace('/api', '')
+  : 'http://127.0.0.1:5000'
+
 function UserAccountPage() {
   const { user, setUser } = useAuth()
   const [activeTab, setActiveTab] = useState('profile')
@@ -152,7 +156,7 @@ function UserAccountPage() {
       await downloadsAPI.trackDownload(pattern.id)
       
       const link = document.createElement('a')
-      link.href = `http://127.0.0.1:5000${pattern.pdf_file}`
+      link.href = `${BACKEND_URL}${pattern.pdf_file}`
       link.download = `${pattern.title}.pdf`
       link.target = '_blank'
       document.body.appendChild(link)
@@ -308,7 +312,7 @@ function UserAccountPage() {
                     <div className="account-pattern-image">
                       {pattern.preview_image ? (
                         <img 
-                          src={`http://127.0.0.1:5000${pattern.preview_image}`}
+                          src={`${BACKEND_URL}${pattern.preview_image}`}
                           alt={pattern.title}
                         />
                       ) : (
@@ -375,7 +379,7 @@ function UserAccountPage() {
                     <div className="account-pattern-image">
                       {pattern.preview_image ? (
                         <img 
-                          src={`http://127.0.0.1:5000${pattern.preview_image}`}
+                          src={`${BACKEND_URL}${pattern.preview_image}`}
                           alt={pattern.title}
                         />
                       ) : (

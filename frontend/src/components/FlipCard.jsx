@@ -6,6 +6,10 @@ import { PatternPlaceholder, Heart, HeartSolid } from './Icons'
 import Toast from './Toast'
 import './FlipCard.css'
 
+const BACKEND_URL = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace('/api', '')
+  : 'http://127.0.0.1:5000'
+
 function FlipCard({ pattern }) {
   const { isAuthenticated } = useAuth()
   const [isFlipped, setIsFlipped] = useState(false)
@@ -68,7 +72,7 @@ function FlipCard({ pattern }) {
     e.stopPropagation()
     if (pattern.pdf_file) {
       const link = document.createElement('a')
-      link.href = `http://127.0.0.1:5000${pattern.pdf_file}`
+      link.href = `${BACKEND_URL}${pattern.pdf_file}`
       link.download = `${pattern.title}.pdf`
       link.target = '_blank'
       document.body.appendChild(link)
@@ -97,7 +101,7 @@ function FlipCard({ pattern }) {
           <div className="flip-card-image-container">
             {pattern.preview_image ? (
               <img
-                src={`http://127.0.0.1:5000${pattern.preview_image}`}
+                src={`${BACKEND_URL}${pattern.preview_image}`}
                 alt={pattern.title}
                 className="flip-card-image"
               />

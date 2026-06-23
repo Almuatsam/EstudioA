@@ -17,7 +17,9 @@ import {
 } from '../animations/variants'
 import './HomePage.css'
 
-const IMAGE_BASE = 'http://127.0.0.1:5000'
+const IMAGE_BASE = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace('/api', '')
+  : 'http://127.0.0.1:5000'
 const MotionLink = motion.create(Link)
 const EASE = [0.19, 1, 0.22, 1]
 
